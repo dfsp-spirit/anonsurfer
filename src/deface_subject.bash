@@ -1,5 +1,5 @@
 #!/bin/bash
-# deface_subject.bash -- run mris_deface for all volume files of a subject
+# deface_subject.bash -- run mri_deface for all volume files of a subject
 #
 # This script is part of 'anonsurfer'
 #
@@ -31,6 +31,19 @@ if [ ! -d "${SUBJECTS_DIR}/${SUBJECT_ID}" ]; then
 fi
 
 
+#### Check deface tools
+SKULL_TEMPLATE="${FREESURFER_HOME}/average/talairach_mixed_with_skull.gca"
+if [ ! -f "${SKULL_TEMPLATE}" ]; then
+    echo "$APPTAG ERROR: skull template for defacing not found at '${SKULL_TEMPLATE}'. Exiting."
+    exit 1
+fi
+
+FACE_TEMPLATE="${FREESURFER_HOME}/average/face.gca"
+if [ ! -f "${FACE_TEMPLATE}" ]; then
+    echo "$APPTAG ERROR: face template for defacing not found at '${FACE_TEMPLATE}'. Exiting."
+    exit 1
+fi
+
 #### ok, lets go
 
 SD = "${SUBJECTS_DIR}/${SUBJECT_ID}";
@@ -40,10 +53,24 @@ echo "$APPTAG --- Defacing not implemented yet ---"
 
 VOLUME_FILES=$(find "$SD/mri/" -name '*.mgz');
 for VOL_FILE in $VOLUME_FILES; do
-    echo "Would handle volume file '$VOL_FILE'."
-done
-
-LABEL_FILES=$(find "$SD/label/" -name '*.label');
-for LABEL_FILE in $LABEL_FILES; do
-    echo "Would handle label file '$LABEL_FILE'."
+    DEFACED_FILE = "${VOL_FILE}.defaced"
+    echo "$APPTAG * Handling volume file '$VOL_FILE'."
+    mri_deface "${VOL_FILE}" "${SKULL_TEMPLATE}" "${FACE_TEMPLATE}" "${DEFACED_FILE}"
+    if [ $? -ne 0 ]; then
+        echo "$APPTAG ERROR: mri_deface command failed. Exiting."
+        exit 1
+    else
+        if [ -f "${DEFACED_FILE}" ]; then
+            mv "${DEFACED_FILE}" "${VOL_FILE}"
+            if [ $? -ne 0 ]; then
+                echo "$APPTAG ERROR: Could not renamed defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Exiting."
+                exit 1
+            else
+                echo "$APPTAG   Successfully defaced brain volume '${DEFACED_FILE}'."
+            fi
+        else
+            echo "$APPTAG ERROR: Cannot read defaced filed '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Exiting."
+            exit 1
+        fi
+    fi
 done
