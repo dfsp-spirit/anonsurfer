@@ -5,8 +5,8 @@ Anonymization of freesurfer recon-all output based on metadata dropping and defa
 
 These are BASH shell scripts for the anonymization of neuroimaging data that has been created using the FreeSurfer `recon-all` pipeline. The goals are to:
 
-* deface all relevant volume files, so the face of the person cannot be reconstructed from the 3D images
-* drop metadata in various recon-all output files that contains information on the original subject identifier
+* Deface all relevant volume files, so the face of the person cannot be reconstructed from the 3D images.
+* Drop metadata in various recon-all output files that contains information on the original subject identifier.
 
 The first goal is rather straight-forward and easy to accomplish using [mri_deface](https://surfer.nmr.mgh.harvard.edu/fswiki/mri_deface), the second one is very hard. Be sure to read and understand the warning on the metadata below. There are separate scripts for the two tasks, you do not need to run both.
 
@@ -14,7 +14,11 @@ Also keep in mind that this pipeline does **not** try to remove personal data of
 
 ## A warning on the metadata
 
-These scripts try to remove the ID from all standard output files in which they know the ID exists. We checked the file formats  of various (ASCII and binary) FreeSurfer v6 output file formats for the IDs, but there is absolutely no guarantee that we did not miss anything, or that the scripts work with other FreeSurfer versions.
+These scripts try to remove the ID from all standard output files in the follwoing sub directories: `mri`, `surf`, `stats`, `label`. The files in other sub directories are **not** handled, and some of them definitely contain the ID.
+
+We checked the file formats  of various (ASCII and binary) FreeSurfer v6 output file formats for the IDs, but there is absolutely no guarantee that we did not miss anything, or that the scripts work with other FreeSurfer versions.
+
+File types which are not listed below have not been treated in any way!
 
 If you need to be sure, it may be better to rename the input DICOM/NIFTI files to random names and re-run recon-all from scratch, so the metadata can never make it into the files and does not have to be removed afterwards.
 
@@ -31,6 +35,17 @@ If you need to be sure, it may be better to rename the input DICOM/NIFTI files t
   - contained metadata:
     * in the ASCII format, the first line is a comment that contains the ID
   - removal method: replace the ID part in the files using regex and standard POSIX shell tools (e.g., `sed`)
+
+## Metadata which is known but not handled (yet)
+
+### Not handled yet in the `mri`, `surf`, `stats`, and `label` directories
+
+* Please report if you find the ID in file types in these directories which are not listed above
+
+
+### In other sub directories (ignored)
+
+* All log files in `anonsubject/scripts/` contain the ID, and are not handled
 
 ## Performance
 
