@@ -16,7 +16,7 @@ In case you do not care about the metadata and just want a parallel version of `
 
 # Defacing
 
-**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxels in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxel values in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
 
 
 Run the script `run_deface.bash` to use the deface pipeline.
@@ -31,7 +31,7 @@ The following files will be defaced for every subject by default:
 
 # Metadata dropping
 
-**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxels in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxel values in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
 
 
 Run the script `run_dropmd.bash` to use the metadata dropping pipeline.
@@ -68,12 +68,14 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
 *Please report by [opening an issue](https://github.com/dfsp-spirit/anonsurfer/issues/new) if you find the ID in file types in these directories which are not listed above.*
 
  
-### In other sub directories (ignored, will not be handled):
+## Ignored metadata
+
+Metadata in other sub directories (outside of `mri`, `surf`, `stats`, `label`) are ignored and will not be handled:
 
 * All log files in `scripts` definitely contain the ID, and are not handled.
 * The sub directories `trash`, `touch` and `tmp` are not handled.
 
-There is no need to share this data afaik.
+There is no need to share the data in afaik, so this pipeline does not alter them.
 
 
 ## Performance
