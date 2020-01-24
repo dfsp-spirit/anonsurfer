@@ -1,5 +1,5 @@
 # anonsurfer
-Anonymization of freesurfer recon-all output based on metadata dropping and defacing.
+Anonymization of freesurfer recon-all output based on metadata dropping and defacing -- in parallel.
 
 ## About
 
