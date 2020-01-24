@@ -40,7 +40,7 @@ If you need to be sure, it may be better to rename the input DICOM/NIFTI files t
 
 ### Not handled yet in the `mri`, `surf`, `stats`, and `label` directories:
 
- *Please report by opening an issue if you find the ID in file types in these directories which are not listed above.*
+ *Please report by [opening an issue](https://github.com/dfsp-spirit/anonsurfer/issues/new) if you find the ID in file types in these directories which are not listed above.*
 
 
 ### In other sub directories (ignored, will not be handled):
