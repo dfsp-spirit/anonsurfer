@@ -34,4 +34,4 @@ If you need to be sure, it may be better to rename the input DICOM/NIFTI files t
 
 ## Performance
 
-These scripts can be used with [GNU parallel](https://www.gnu.org/software/parallel/) to process several subjects in parallel. Keep in mind that may parts are quite I/O heavy though, so if you have a machine with many cores but slow storage, you *may* be better off **not** using all cores.
+These scripts can be used with [GNU parallel](https://www.gnu.org/software/parallel/) to process several subjects in parallel. Keep in mind that some of the tasks are quite I/O heavy though, so if you have a machine with many cores but slow storage, you *may* be better off **not** using all cores.
