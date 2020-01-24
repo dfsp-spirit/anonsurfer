@@ -12,6 +12,15 @@ The first goal is rather straight-forward and easy to accomplish using [mri_defa
 
 In case you do not care about the metadata and just want a parallel version of `mri_deface`: There are separate scripts for the two tasks, you do not need to run both.
 
+## Defacing
+
+The following files will be defaced for every subject by default:
+
+* `mri/orig.mgz`
+* `mri/orig_nu.mgz`
+* `mri/T1.mgz`
+* `mri/rawavg.mgz`
+* `mri/orig/001.mgz`
 
 ## A warning on the metadata
 
