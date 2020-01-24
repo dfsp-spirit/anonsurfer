@@ -1,5 +1,5 @@
 # anonsurfer
-Anonymization of freesurfer recon-all output based on metadata dropping and defacing.
+Anonymization of freesurfer recon-all output based on metadata dropping and defacing -- in parallel.
 
 ## About
 
@@ -8,9 +8,10 @@ These are BASH shell scripts for the anonymization of neuroimaging data that has
 * Deface all relevant volume files, so the face of the person cannot be reconstructed from the 3D images.
 * Drop metadata in various recon-all output files that contains information on the original subject identifier.
 
-The first goal is rather straight-forward and easy to accomplish using [mri_deface](https://surfer.nmr.mgh.harvard.edu/fswiki/mri_deface), the second one is very hard. Be sure to read and understand the warning on the metadata below. There are separate scripts for the two tasks, you do not need to run both.
+The first goal is rather straight-forward and easy to accomplish using [mri_deface](https://surfer.nmr.mgh.harvard.edu/fswiki/mri_deface), the second one is very hard. Be sure to read and understand the warning on the metadata below. 
 
-Also keep in mind that this pipeline does **not** try to remove personal data of the person who created the data (ran the `recon-all` commands). The FreeSurfer output files also contain information on the user account and machine name on which the pre-processing was run. The username often is a clear name or something from which the full name of the person can be derived. If you do not want this information in there, I would recommend to create a separate user account (e.g., named `fsuser`) and have everybody in your group use that when running `recon-all`. 
+In case you do not care about the metadata and just want a parallel version of `mri_deface`: There are separate scripts for the two tasks, you do not need to run both.
+
 
 ## A warning on the metadata
 
@@ -21,6 +22,9 @@ We checked the file formats  of various (ASCII and binary) FreeSurfer v6 output 
 File types which are not listed below have not been treated in any way!
 
 If you need to be sure, it may be better to rename the input DICOM/NIFTI files to random names and re-run recon-all from scratch, so the metadata can never make it into the files and does not have to be removed afterwards.
+
+Also keep in mind that this pipeline does **not** try to remove personal data of the person who created the data (ran the `recon-all` commands). The FreeSurfer output files also contain information on the user account and machine name on which the pre-processing was run. The username often is a clear name or something from which the full name of the person can be derived. If you do not want this information in there, I would recommend to create a separate user account (e.g., named `fsuser`) and have everybody in your group use that when running `recon-all`. 
+
 
 ## Metadata and dropping method by file format
 
