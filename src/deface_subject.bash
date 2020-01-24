@@ -50,9 +50,16 @@ SD="${SUBJECTS_DIR}/${SUBJECT_ID}";
 echo "$APPTAG --- Defacing subject '${SUBJECT_ID}' in directory '${SD}'. ---"
 
 
-VOLUME_FILES=$(find "${SD}/mri/" -name '*.mgz');
-for VOL_FILE in $VOLUME_FILES; do
-    DEFACED_FILE="${VOL_FILE}.defaced"
+# We cannot use all volume files, as mri_deface will fail for volumes which do not resemble a full head.
+VOLUME_FILES_RELATIVE_TO_MRI_DIR="mri/orig.mgz mri/orig_nu.mgz mri/T1.mgz mri/rawavg.mgz mri/orig/001.mgz"
+
+for REL_VOL_FILE in $VOLUME_FILES_RELATIVE_TO_MRI_DIR; do
+    VOL_FILE="${SD}/${REL_VOL_FILE}"
+    if [ ! -f "${VOL_FILE}" ]; then
+        echo "$APPTAG NOTICE: Subject '${SUBJECT_ID} has no file '${VOL_FILE}'. Cannot deface."
+        continue
+    fi
+    DEFACED_FILE="${VOL_FILE}.defaced.mgz"
     echo "$APPTAG * Handling volume file '$VOL_FILE'."
     mri_deface "${VOL_FILE}" "${SKULL_TEMPLATE}" "${FACE_TEMPLATE}" "${DEFACED_FILE}"
     if [ $? -ne 0 ]; then
@@ -65,7 +72,7 @@ for VOL_FILE in $VOLUME_FILES; do
                 echo "$APPTAG ERROR: Could not rename defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Exiting."
                 exit 1
             else
-                echo "$APPTAG   Successfully defaced brain volume '${DEFACED_FILE}'."
+                echo "$APPTAG   Successfully defaced brain volume '${VOL_FILE}'."
             fi
         else
             echo "$APPTAG ERROR: Cannot read defaced filed '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Exiting."
