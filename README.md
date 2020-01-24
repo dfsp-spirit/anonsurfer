@@ -36,16 +36,18 @@ If you need to be sure, it may be better to rename the input DICOM/NIFTI files t
     * in the ASCII format, the first line is a comment that contains the ID
   - removal method: replace the ID part in the files using regex and standard POSIX shell tools (e.g., `sed`)
 
-## Metadata which is known but not handled (yet)
+## Metadata which is known but not handled yet:
 
-### Not handled yet in the `mri`, `surf`, `stats`, and `label` directories
+### Not handled yet in the `mri`, `surf`, `stats`, and `label` directories:
 
 * Please report if you find the ID in file types in these directories which are not listed above
 
 
-### In other sub directories (ignored)
+### In other sub directories (ignored, will not be handled):
 
-* All log files in `anonsubject/scripts/` contain the ID, and are not handled
+* All log files in `scripts` definitely contain the ID, and are not handled.
+* The sub directories `trash`, `touch` and `tmp` are not handled.
+
 
 ## Performance
 
