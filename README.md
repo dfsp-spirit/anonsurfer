@@ -21,11 +21,13 @@ If you need to be sure, it may be better to rename the input DICOM/NIFTI files t
 ## Metadata and dropping method by file format
 
 * mgh/mgz files (3 or 4-dimensional brain volumes): 
+  - example file: `anonsubject/mri/brain.mgz`
   - contained metadata: 
     * original full absolute path to talairach file, including the ID in the source path
     * history of shell commands run on the file
   - removal method: convert to NIFTI and back (using `mris_convert`).
 * label files (sections of a brain surface, defined by vertex list):
+  - example file: `anonsubject/label/lh.cortex.label`
   - contained metadata:
     * in the ASCII format, the first line is a comment that contains the ID
   - removal method: replace the ID part in the files using regex and standard POSIX shell tools (e.g., `sed`)
