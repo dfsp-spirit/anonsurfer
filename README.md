@@ -1,6 +1,8 @@
 # anonsurfer
 Anonymization of freesurfer recon-all output based on metadata dropping and defacing -- in parallel.
 
+**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxels in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+
 ## About
 
 These are BASH shell scripts for the anonymization of neuroimaging data that has been created using the FreeSurfer `recon-all` pipeline. The goals are to:
@@ -14,6 +16,9 @@ In case you do not care about the metadata and just want a parallel version of `
 
 # Defacing
 
+**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxels in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+
+
 Run the script `run_deface.bash` to use the deface pipeline.
 
 The following files will be defaced for every subject by default:
@@ -25,6 +30,9 @@ The following files will be defaced for every subject by default:
 * `mri/orig/001.mgz`
 
 # Metadata dropping
+
+**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxels in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+
 
 Run the script `run_dropmd.bash` to use the metadata dropping pipeline.
 
