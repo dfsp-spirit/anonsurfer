@@ -56,3 +56,10 @@ Also keep in mind that this pipeline does **not** try to remove personal data of
 ## Performance
 
 These scripts can be used with [GNU parallel](https://www.gnu.org/software/parallel/) to process several subjects in parallel. Keep in mind that some of the tasks are quite I/O heavy though, so if you have a machine with many cores but slow storage, you *may* be better off **not** using all cores.
+
+
+## Requirements
+
+* BASH shell
+* FreeSurfer installed and configured for the BASH shell (e.g., environment variable FREESURFER_HOME set)
+* GNU parallel
