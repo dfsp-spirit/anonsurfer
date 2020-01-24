@@ -15,5 +15,8 @@ if [ -z "$3" ]; then
 else
     EXEC_PATH_OF_THIS_SCRIPT=$(dirname $0)
     PIPELINE_SCRIPT="${EXEC_PATH_OF_THIS_SCRIPT}/pipelines.bash"
+    echo "$APPTAG Running dropmd pipeline with subjects_file '$1', subjects_dir '$2'. Will use $3 parallel processes."
     ${PIPELINE_SCRIPT} "$1" "$2" drop_metadata "$3"
 fi
+
+# Note: the `pipeline.bash` script will check some stuff, and then use GNU parallel to run `dropmd_subject.bash` for each subject.

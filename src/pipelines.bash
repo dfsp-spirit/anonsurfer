@@ -49,14 +49,8 @@ if [ -z "${TASK}" ]; then
     exit 1
 fi
 
+
 NUM_CONSECUTIVE_JOBS="$4"
-if [ -z "$NUM_CONSECUTIVE_JOBS" ]; then
-    NUM_CONSECUTIVE_JOBS=4
-    echo "$APPTAG Number of parallel jobs not specified on command line, defaulting to $NUM_CONSECUTIVE_JOBS jobs."
-fi
-###### End of job settings #####
-
-
 
 
 
@@ -76,8 +70,6 @@ fi
 
 
 
-
-
 # Check for borken line endings (Windows line endings, '\r\n') in subjects.txt file, a very common error.
 # This script can cope with these line endings, but we still warn the user because other scripts may choke on them.
 NUM_BROKEN_LINE_ENDINGS=$(grep -U $'\015' "${SUBJECTS_FILE}" | wc -l | tr -d '[:space:]')
@@ -90,7 +82,7 @@ SUBJECTS=$(cat "${SUBJECTS_FILE}" | tr -d '\r' | tr '\n' ' ')    # fix potential
 SUBJECT_COUNT=$(echo "${SUBJECTS}" | wc -w | tr -d '[:space:]')
 
 
-echo "$APPTAG Parallelizing over the ${SUBJECT_COUNT} subjects in file '${SUBJECTS_FILE}' using ${NUM_CONSECUTIVE_JOBS} threads."
+echo "$APPTAG Parallelizing task '${TASK}' over the ${SUBJECT_COUNT} subjects in file '${SUBJECTS_FILE}' using ${NUM_CONSECUTIVE_JOBS} threads."
 
 # We can check already whether the subjects exist.
 for SUBJECT in $SUBJECTS; do
@@ -125,4 +117,5 @@ fi
 
 ############ execution, no need to mess with this. ############
 DATE_TAG=$(date '+%Y-%m-%d_%H-%M-%S')
-echo ${SUBJECTS} | tr ' ' '\n' | parallel --jobs ${NUM_CONSECUTIVE_JOBS} --workdir . --joblog logfile_${TASK}_${DATE_TAG}.txt "$CARGO_SCRIPT {} ${SUBJECTS_DIR}"
+LOGFILE="logfile_${TASK}_${DATE_TAG}.txt"
+echo ${SUBJECTS} | tr ' ' '\n' | parallel --jobs ${NUM_CONSECUTIVE_JOBS} --workdir . --joblog "${LOGFILE}" "$CARGO_SCRIPT {} ${SUBJECTS_DIR}"

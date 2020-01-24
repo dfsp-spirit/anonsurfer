@@ -46,14 +46,13 @@ fi
 
 #### ok, lets go
 
-SD = "${SUBJECTS_DIR}/${SUBJECT_ID}";
+SD="${SUBJECTS_DIR}/${SUBJECT_ID}";
 echo "$APPTAG --- Defacing subject '${SUBJECT_ID}' in directory '${SD}'. ---"
-echo "$APPTAG --- Defacing not implemented yet ---"
 
 
-VOLUME_FILES=$(find "$SD/mri/" -name '*.mgz');
+VOLUME_FILES=$(find "${SD}/mri/" -name '*.mgz');
 for VOL_FILE in $VOLUME_FILES; do
-    DEFACED_FILE = "${VOL_FILE}.defaced"
+    DEFACED_FILE="${VOL_FILE}.defaced"
     echo "$APPTAG * Handling volume file '$VOL_FILE'."
     mri_deface "${VOL_FILE}" "${SKULL_TEMPLATE}" "${FACE_TEMPLATE}" "${DEFACED_FILE}"
     if [ $? -ne 0 ]; then
@@ -63,7 +62,7 @@ for VOL_FILE in $VOLUME_FILES; do
         if [ -f "${DEFACED_FILE}" ]; then
             mv "${DEFACED_FILE}" "${VOL_FILE}"
             if [ $? -ne 0 ]; then
-                echo "$APPTAG ERROR: Could not renamed defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Exiting."
+                echo "$APPTAG ERROR: Could not rename defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Exiting."
                 exit 1
             else
                 echo "$APPTAG   Successfully defaced brain volume '${DEFACED_FILE}'."
