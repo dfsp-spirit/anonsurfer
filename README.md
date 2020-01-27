@@ -92,6 +92,18 @@ Metadata in other sub directories (outside of `mri`, `surf`, `stats`, `label`) a
 
 There is no need to share the data in afaik, so this pipeline does not alter them.
 
+# Logging and error handling
+
+The exit status of all relevant shell commands are monitored and logged, so that you can tell whether anything went wrong, which subjects are affected, and which files were and were not handled successfully. When you run any pipeline, the following log files will be created in the current working directory:
+
+* `anonsurfer_pipeline_<TASK>_<RUN_ID>.log`: contains the GNU parallel log for the run
+* `anonsurfer_deface_<SUBJECT_ID>_<RUN_ID>.log`: contains the deface log for the subject (if run)
+* `anonsurfer_dropmd_<SUBJECT_ID>_<RUN_ID>.log`: contains the drop metadata log for the subject (if run)
+
+The `<RUN_ID>` is a string constructed from the date and time when the pipeline was started. It is shared by all log files that belong to a run (i.e., it will be identical for the pipeline log and all subject log files).
+
+If any errors occurred, the log lines contain the string `ERROR:`.
+
 
 # Runtime and Performance
 
