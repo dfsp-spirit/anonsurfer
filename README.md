@@ -19,7 +19,14 @@ In case you do not care about the metadata and just want a parallel version of `
 **IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
 
-Run the script `run_deface.bash` to use the deface pipeline.
+Run the script `run_deface.bash` to use the deface pipeline. Usage:
+
+```
+./run_deface.bash <subjects_file> <subjects_dir> <num_proc>
+```
+
+The *subjects_file* is a text file containing one subject per line.
+
 
 The following files will be defaced for every subject by default:
 
@@ -35,6 +42,14 @@ The following files will be defaced for every subject by default:
 
 
 Run the script `run_dropmd.bash` to use the metadata dropping pipeline.
+
+
+```
+./run_ddropmd.bash <subjects_file> <subjects_dir> <num_proc>
+```
+
+The *subjects_file* is a text file containing one subject per line.
+
 
 ## A warning on the metadata
 
