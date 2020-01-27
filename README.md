@@ -45,7 +45,7 @@ Run the script `run_dropmd.bash` to use the metadata dropping pipeline.
 
 
 ```
-./run_ddropmd.bash <subjects_file> <subjects_dir> <num_proc>
+./run_dropmd.bash <subjects_file> <subjects_dir> <num_proc>
 ```
 
 See the usage section of the run_deface pipeline above for details.
