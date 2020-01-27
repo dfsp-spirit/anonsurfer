@@ -1,5 +1,5 @@
 # anonsurfer
-Anonymization of freesurfer recon-all output based on metadata dropping and defacing -- in parallel.
+Anonymization of [FreeSurfer](http://freesurfer.net/) recon-all output based on metadata dropping and defacing -- in parallel.
 
 **IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
