@@ -1,7 +1,7 @@
 # anonsurfer
 Anonymization of freesurfer recon-all output based on metadata dropping and defacing -- in parallel.
 
-**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxels in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+**IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
 ## About
 
@@ -16,10 +16,17 @@ In case you do not care about the metadata and just want a parallel version of `
 
 # Defacing
 
-**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxel values in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+**IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
 
-Run the script `run_deface.bash` to use the deface pipeline.
+Run the script `run_deface.bash` to use the deface pipeline. Usage:
+
+```
+./run_deface.bash <subjects_file> <subjects_dir> <num_proc>
+```
+
+The *subjects_file* is a text file containing one subject per line. The *subject_dir* is your FreeSurfer SUBJECTS_DIR, the directory containing the data. The *num_proc* parameter defines the number of subjects to run in parallel, and should not exceed the number of cores of the machine. Run `nproc` under Linux to find it.
+
 
 The following files will be defaced for every subject by default:
 
@@ -31,10 +38,18 @@ The following files will be defaced for every subject by default:
 
 # Metadata dropping
 
-**IMPORTANT: This pipeline will alter the data, e.g., overwrite voxel values in brain volumes and change metadata in files. You should only run it on a backup copy of your data that you want to export. NEVER run this on your original data! If something goes wrong, you will have to restart from a fresh copy of the original data.**
+**IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
 
 Run the script `run_dropmd.bash` to use the metadata dropping pipeline.
+
+
+```
+./run_ddropmd.bash <subjects_file> <subjects_dir> <num_proc>
+```
+
+See the usage section of the run_deface pipeline above for details.
+
 
 ## A warning on the metadata
 
@@ -78,13 +93,18 @@ Metadata in other sub directories (outside of `mri`, `surf`, `stats`, `label`) a
 There is no need to share the data in afaik, so this pipeline does not alter them.
 
 
-## Performance
+# Runtime and Performance
 
 These scripts can be used with [GNU parallel](https://www.gnu.org/software/parallel/) to process several subjects in parallel. Keep in mind that some of the tasks are quite I/O heavy though, so if you have a machine with many cores but slow storage, you *may* be better off **not** using all cores.
 
+A very rough guide to estimate the runtime of the pipelines:
 
-## Requirements
+* **deface pipeline**: On a modern CPU, defacing takes roughly 2 minutes per volume file. A typical subject has 5 volume files that need to be defaced.
+* **drop metadata pipeline**: Converting an MGH/MGZ volume to NIFTI and back takes < 3 seconds (and may depend more on IO than your CPU). A typical subject has about 30 volume files that need to be converted.
 
-* BASH shell
-* FreeSurfer installed and configured for the BASH shell (e.g., environment variable FREESURFER_HOME set)
-* GNU parallel
+
+# Requirements
+
+* Linux or MacOS system (with BASH shell installed)
+* [FreeSurfer](http://freesurfer.net/) installed and configured for the BASH shell (e.g., environment variable FREESURFER_HOME set)
+* [GNU parallel](https://www.gnu.org/software/parallel/)
