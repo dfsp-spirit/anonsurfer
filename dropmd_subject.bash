@@ -10,7 +10,7 @@ APPTAG="[DROPMD_SUBJECT]"
 
 if [ -z "$2" ]; then
   echo "$APPTAG ERROR: Arguments missing."
-  echo "$APPTAG Usage: $0 <subject_id> <subjects_dir>"
+  echo "$APPTAG INFO: Usage: $0 <subject_id> <subjects_dir>"
   exit 1
 else
   SUBJECT_ID="$1"
@@ -34,16 +34,45 @@ fi
 #### ok, lets go
 
 SD = "${SUBJECTS_DIR}/${SUBJECT_ID}";
-echo "$APPTAG --- Dropping metadata for subject '${SUBJECT_ID}' in directory '${SD}'. ---"
-echo "$APPTAG --- Dropping metadata not implemented yet ---"
+echo "$APPTAG INFO: --- Dropping metadata for subject '${SUBJECT_ID}' in directory '${SD}'. ---"
 
 
+## --------------------------------- Handle metadata in files in mri/ dir ---------------------------------------
+echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'."
 VOLUME_FILES=$(find "$SD/mri/" -name '*.mgz');
 for VOL_FILE in $VOLUME_FILES; do
-    echo "Would handle volume file '$VOL_FILE'."
+  if [ ! -f "${VOL_FILE}" ]; then
+      echo "$APPTAG NOTICE: Subject '${SUBJECT_ID} has no file '${VOL_FILE}'. Continuing."
+      continue
+  fi
+  NOMD_FILE="${VOL_FILE}.nii"
+  echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' metadata in volume file '$VOL_FILE'."
+  mri_convert "${VOL_FILE}" "${NOMD_FILE}"
+  if [ $? -ne 0 ]; then
+      echo "$APPTAG ERROR: mri_convert command failed for subject '${SUBJECT_ID}' file '${VOL_FILE}'. Exiting."
+      exit 1
+  else
+      if [ -f "${NOMD_FILE}" ]; then
+          mv "${NOMD_FILE}" "${VOL_FILE}"
+          if [ $? -ne 0 ]; then
+              echo "$APPTAG ERROR: Could not rename subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Exiting."
+              exit 1
+          else
+              echo "$APPTAG INFO: Successfully defaced subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'."
+          fi
+      else
+          echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced filed '${DEFACED_FILE}' after mri_convert command (even though it returned no error). Exiting."
+          exit 1
+      fi
+  fi
 done
 
+
+## --------------------------------- Handle metadata in files in label/ dir ---------------------------------------
+echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'."
 LABEL_FILES=$(find "$SD/label/" -name '*.label');
 for LABEL_FILE in $LABEL_FILES; do
     echo "Would handle label file '$LABEL_FILE'."
 done
+
+echo "$APPTAG INFO: Finished metadata dropping for subject '${SUBJECT_ID}'."
