@@ -3,7 +3,7 @@ Anonymization of [FreeSurfer](http://freesurfer.net/) recon-all output based on 
 
 **IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
-## About
+### About
 
 These are BASH shell scripts for the anonymization of neuroimaging data that has been created using the FreeSurfer `recon-all` pipeline. The goals are to:
 
@@ -14,7 +14,7 @@ The first goal is rather straight-forward and easy to accomplish using [mri_defa
 
 In case you do not care about the metadata and just want a parallel version of `mri_deface`: There are separate scripts for the two tasks, you do not need to run both.
 
-# Defacing
+## Defacing
 
 **IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
@@ -36,7 +36,7 @@ The following files will be defaced for every subject by default:
 * `mri/rawavg.mgz`
 * `mri/orig/001.mgz`
 
-# Metadata dropping
+## Metadata dropping
 
 **IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
 
@@ -51,7 +51,7 @@ Run the script `run_dropmd.bash` to use the metadata dropping pipeline.
 See the usage section of the run_deface pipeline above for details.
 
 
-## A warning on the metadata
+### A warning on the metadata
 
 These scripts try to remove the ID from all standard output files in the follwoing sub directories: `mri`, `surf`, `stats`, `label`. The files in other sub directories are **not** handled, and some of them definitely contain the ID. The idea is to remove the ID from all data files that are shared with other scientists.
 
@@ -64,7 +64,7 @@ If you need to be sure, it may be better to rename the input DICOM/NIFTI files t
 Also keep in mind that this pipeline does **not** try to remove personal data of the person who created the data (ran the `recon-all` commands). The FreeSurfer output files also contain information on the user account and machine name on which the pre-processing was run. The username often is a clear name or something from which the full name of the person can be derived. If you do not want this information in there, I would recommend to create a separate user account (e.g., named `fsuser`) and have everybody in your group use that when running `recon-all`. 
 
 
-## How metadata dropping works
+### How metadata dropping works
 
 Metadata and dropping method by file format, for the directories `mri`, `surf`, `stats`, `label`:
 
@@ -83,7 +83,7 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
 *Please report by [opening an issue](https://github.com/dfsp-spirit/anonsurfer/issues/new) if you find the ID in file types in these directories which are not listed above.*
 
  
-## Ignored metadata
+### Ignored metadata
 
 Metadata in other sub directories (outside of `mri`, `surf`, `stats`, `label`) are ignored and will not be handled:
 
@@ -92,7 +92,7 @@ Metadata in other sub directories (outside of `mri`, `surf`, `stats`, `label`) a
 
 There is no need to share the data in afaik, so this pipeline does not alter them.
 
-# Logging and error handling
+## Logging and error handling
 
 The exit status of all relevant shell commands are monitored and logged, so that you can tell whether anything went wrong, which subjects are affected, and which files were and were not handled successfully. When you run any pipeline, the following log files will be created in the current working directory:
 
@@ -105,7 +105,7 @@ The `<RUN_ID>` is a string constructed from the date and time when the pipeline 
 If any errors occurred, the log lines contain the string `ERROR:`.
 
 
-# Runtime and Performance
+## Runtime and Performance
 
 These scripts can be used with [GNU parallel](https://www.gnu.org/software/parallel/) to process several subjects in parallel. Keep in mind that some of the tasks are quite I/O heavy though, so if you have a machine with many cores but slow storage, you *may* be better off **not** using all cores.
 
@@ -115,7 +115,7 @@ A very rough guide to estimate the runtime of the pipelines:
 * **drop metadata pipeline**: Converting an MGH/MGZ volume to NIFTI and back takes < 3 seconds (and may depend more on IO than your CPU). A typical subject has about 30 volume files that need to be converted.
 
 
-# Requirements
+## System Requirements
 
 * Linux or MacOS system (with BASH shell installed)
 * [FreeSurfer](http://freesurfer.net/) installed and configured for the BASH shell (e.g., environment variable FREESURFER_HOME set)
