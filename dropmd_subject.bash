@@ -55,13 +55,13 @@ for VOL_FILE in $VOLUME_FILES; do
       if [ -f "${NOMD_FILE}" ]; then
           mv "${NOMD_FILE}" "${VOL_FILE}"
           if [ $? -ne 0 ]; then
-              echo "$APPTAG ERROR: Could not rename subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Exiting."
+              echo "$APPTAG ERROR: Could not rename subject '${SUBJECT_ID}' volume file '${NOMD_FILE}' to '${VOL_FILE}'. Exiting."
               exit 1
           else
               echo "$APPTAG INFO: Successfully defaced subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'."
           fi
       else
-          echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced filed '${DEFACED_FILE}' after mri_convert command (even though it returned no error). Exiting."
+          echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced filed '${NOMD_FILE}' after mri_convert command (even though it returned no error). Exiting."
           exit 1
       fi
   fi
@@ -69,10 +69,15 @@ done
 
 
 ## --------------------------------- Handle metadata in files in label/ dir ---------------------------------------
-echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'."
+echo "$APPTAG INFO: Handling data in sub directory 'label' for subject '${SUBJECT_ID}'."
 LABEL_FILES=$(find "$SD/label/" -name '*.label');
 for LABEL_FILE in $LABEL_FILES; do
-    echo "Would handle label file '$LABEL_FILE'."
+    echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' ASCII label file '$LABEL_FILE'."
+    sed --in-place "1s/.*/#! ascii label for anon subject/" "${LABEL_FILE}"
+    if [ $? -ne 0 ]; then
+        echo "$APPTAG ERROR: sed command failed for subject '${SUBJECT_ID}' label file '${LABEL_FILE}'. Exiting."
+        exit 1
+    fi
 done
 
 echo "$APPTAG INFO: Finished metadata dropping for subject '${SUBJECT_ID}'."
