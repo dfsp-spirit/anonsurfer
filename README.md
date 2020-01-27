@@ -25,7 +25,7 @@ Run the script `run_deface.bash` to use the deface pipeline. Usage:
 ./run_deface.bash <subjects_file> <subjects_dir> <num_proc>
 ```
 
-The *subjects_file* is a text file containing one subject per line.
+The *subjects_file* is a text file containing one subject per line. The *subject_dir* is your FreeSurfer SUBJECTS_DIR, the directory containing the data. The *num_proc* parameter defines the number of subjects to run in parallel, and should not exceed the number of cores of the machine. Run `nproc` under Linux to find it.
 
 
 The following files will be defaced for every subject by default:
@@ -48,7 +48,7 @@ Run the script `run_dropmd.bash` to use the metadata dropping pipeline.
 ./run_ddropmd.bash <subjects_file> <subjects_dir> <num_proc>
 ```
 
-The *subjects_file* is a text file containing one subject per line.
+See the usage section of the run_deface pipeline above for details.
 
 
 ## A warning on the metadata
