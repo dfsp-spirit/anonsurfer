@@ -5,7 +5,8 @@
 #
 # Written by Tim Schaefer, 2020-24-01
 #
-
+# This script checks the common requirements for the pipelines (basically the proper setup of FreeSurfer and the subject data).
+# If everything looks good, it uses GNU Parallel to run the respective pipeline in parallel over all subjects.
 
 APPTAG="[PIPELINES]"
 
@@ -82,7 +83,7 @@ SUBJECTS=$(cat "${SUBJECTS_FILE}" | tr -d '\r' | tr '\n' ' ')    # fix potential
 SUBJECT_COUNT=$(echo "${SUBJECTS}" | wc -w | tr -d '[:space:]')
 
 
-echo "$APPTAG Parallelizing task '${TASK}' over the ${SUBJECT_COUNT} subjects in file '${SUBJECTS_FILE}' using ${NUM_CONSECUTIVE_JOBS} threads."
+echo "$APPTAG INFO: Parallelizing task '${TASK}' over the ${SUBJECT_COUNT} subjects in file '${SUBJECTS_FILE}' using ${NUM_CONSECUTIVE_JOBS} threads."
 
 # We can check already whether the subjects exist.
 for SUBJECT in $SUBJECTS; do
@@ -117,5 +118,9 @@ fi
 
 ############ execution, no need to mess with this. ############
 DATE_TAG=$(date '+%Y-%m-%d_%H-%M-%S')
-LOGFILE="logfile_${TASK}_${DATE_TAG}.txt"
-echo ${SUBJECTS} | tr ' ' '\n' | parallel --jobs ${NUM_CONSECUTIVE_JOBS} --workdir . --joblog "${LOGFILE}" "$CARGO_SCRIPT {} ${SUBJECTS_DIR}"
+LOGFILE="anonsurfer_pipeline_${TASK}_${DATE_TAG}.log"
+echo "$APPTAG INFO: Starting pipeline, this may take a while. Logging all output to the logfile '${LOGFILE}' during the run."
+echo ${SUBJECTS} | tr ' ' '\n' | parallel --jobs ${NUM_CONSECUTIVE_JOBS} --workdir . --joblog "${LOGFILE}" "$CARGO_SCRIPT {} ${SUBJECTS_DIR} ${DATE_TAG}"
+
+DATE_TAG_END=$(date '+%Y-%m-%d_%H-%M-%S')
+echo "$APPTAG INFO: Pipeline ended at ${DATE_TAG_END}. Check the GNU parallel logfile '${LOGFILE}' and the ${TASK} logfiles for the individual subjects. Hint: Errors are marked with the string 'ERROR'."
