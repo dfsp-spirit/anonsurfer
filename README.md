@@ -64,7 +64,7 @@ If you need to be sure, it may be better to rename the input DICOM/NIFTI files t
 Also keep in mind that this pipeline does **not** try to remove personal data of the person who created the data (ran the `recon-all` commands). The FreeSurfer output files also contain information on the user account and machine name on which the pre-processing was run. The username often is a clear name or something from which the full name of the person can be derived. If you do not want this information in there, I would recommend to create a separate user account (e.g., named `fsuser`) and have everybody in your group use that when running `recon-all`. 
 
 
-## How it works
+## How metadata dropping works
 
 Metadata and dropping method by file format, for the directories `mri`, `surf`, `stats`, `label`:
 
