@@ -25,7 +25,7 @@ if [ -z "$3" ]; then
 else
   DATE_TAG="$3"
 fi
-LOGFILE="anonsurfer_deface_{$SUBJECT_ID}_${DATE_TAG}.log"
+LOGFILE="anonsurfer_deface_${SUBJECT_ID}_${DATE_TAG}.log"
 
 
 #### check some basic stuff first
