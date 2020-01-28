@@ -12,6 +12,9 @@ APPTAG="[DEFACE_SUBJECT]"
 if [ -z "$2" ]; then
   echo "$APPTAG ERROR: Arguments missing. Exiting."
   echo "$APPTAG INFO: Usage: $0 <subject_id> <subjects_dir> [<log_tag>]"
+  echo "$APPTAG WARNING: +++++ Running this script will alter parts of your imaging data! +++++ "
+  echo "$APPTAG WARNING: +++++       Only run this on an extra copy of your data!         +++++ "
+  echo "$APPTAG WARNING: +++++ Running this script will alter parts of your imaging data! +++++ "
   exit 1
 else
   SUBJECT_ID="$1"

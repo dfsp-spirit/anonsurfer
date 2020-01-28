@@ -13,6 +13,8 @@ if [ -z "$3" ]; then
     echo "$APPTAG    <subjects_file> : path to a textfile containing one subject per line"
     echo "$APPTAG    <subjects_dir>  : path to the FreeSurfer recon-all output directory (known as FreeSurfer SUBJECTS_DIR)."
     echo "$APPTAG    <num_proc>      : number of processes (subjects) to run in parallel. Set to 0 for max for your machine."
+    echo "$APPTAG WARNING: +++++ Running this script will alter parts of your imaging data! +++++ "
+    echo "$APPTAG WARNING: +++++       Only run this on an extra copy of your data!         +++++ "
     exit 1
 else
     EXEC_PATH_OF_THIS_SCRIPT=$(dirname $0)
