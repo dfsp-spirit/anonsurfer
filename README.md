@@ -114,6 +114,8 @@ A very rough guide to estimate the runtime of the pipelines:
 * **deface pipeline**: On a modern CPU, defacing takes roughly 2 minutes per volume file. A typical subject has 5 volume files that need to be defaced.
 * **drop metadata pipeline**: Converting an MGH/MGZ volume to NIFTI and back takes < 3 seconds (and may depend more on IO than your CPU). A typical subject has about 30 volume files that need to be converted.
 
+Parallelization happens on subject level, **not** on file level. 
+
 
 ## System Requirements
 
