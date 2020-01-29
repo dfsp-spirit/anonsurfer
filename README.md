@@ -68,16 +68,21 @@ Also keep in mind that this pipeline does **not** try to remove personal data of
 
 Metadata and dropping method by file format, for the directories `mri`, `surf`, `stats`, `label`:
 
-* mgh/mgz files (3 or 4-dimensional brain volumes): 
+* mgh/mgz files (contains 3 or 4-dimensional brain volumes or 1D morph data): 
   - example file: `anonsubject/mri/brain.mgz`
   - contained metadata: 
     * original full absolute path to talairach file, including the ID in the source path
     * history of shell commands run on the file
+  - how to check whether metadata is contained:
+    * for talairach info: `mri_info <file> | grep talairach`
+    * for command line history: `mri_info --cmds <file>`
   - removal method: convert to NIFTI and back (using `mris_convert`).
-* label files (sections of a brain surface, defined by vertex list):
+* label files (contains sections of a brain surface, defined by a vertex list):
   - example file: `anonsubject/label/lh.cortex.label`
   - contained metadata:
     * in the ASCII format, the first line is a comment that contains the ID
+  - how to check whether metadata is contained:
+    * it's a text file, just use `head -n 1 <file>`
   - removal method: replace the ID part in the files using regex and standard POSIX shell tools (e.g., `sed`)
 
 *Please report by [opening an issue](https://github.com/dfsp-spirit/anonsurfer/issues/new) if you find the ID in file types in these directories which are not listed above.*
