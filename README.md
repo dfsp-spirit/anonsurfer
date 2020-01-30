@@ -84,6 +84,15 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
   - how to check whether metadata is contained:
     * it's a text file, just use `head -n 1 <file>`
   - removal method: replace the ID part in the files using regex and standard POSIX shell tools (e.g., `sed`)
+* lta files (transformation info):
+  - example file: `anonsubject/mri/transforms/cc_up.lta`
+  - **NOT handled yet**
+* stats files
+  - example files: `stats/aseg.stats`
+  - **NOT handled yet**
+* binary surface files
+  - example file: `surf/lh.white`
+  - **NOT handled yet**
 
 *Please report by [opening an issue](https://github.com/dfsp-spirit/anonsurfer/issues/new) if you find the ID in file types in these directories which are not listed above.*
 
