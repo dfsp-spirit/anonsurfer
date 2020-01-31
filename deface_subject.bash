@@ -14,7 +14,6 @@ if [ -z "$2" ]; then
   echo "$APPTAG INFO: Usage: $0 <subject_id> <subjects_dir> [<log_tag>]"
   echo "$APPTAG WARNING: +++++ Running this script will alter parts of your imaging data! +++++ "
   echo "$APPTAG WARNING: +++++       Only run this on an extra copy of your data!         +++++ "
-  echo "$APPTAG WARNING: +++++ Running this script will alter parts of your imaging data! +++++ "
   exit 1
 else
   SUBJECT_ID="$1"
@@ -78,20 +77,17 @@ for REL_VOL_FILE in $VOLUME_FILES_RELATIVE_TO_MRI_DIR; do
     echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' volume file '$VOL_FILE'."
     mri_deface "${VOL_FILE}" "${SKULL_TEMPLATE}" "${FACE_TEMPLATE}" "${DEFACED_FILE}"
     if [ $? -ne 0 ]; then
-        echo "$APPTAG ERROR: mri_deface command failed for subject '${SUBJECT_ID}' file '${VOL_FILE}'. Exiting." >> "${LOGFILE}"
-        exit 1
+        echo "$APPTAG ERROR: mri_deface command failed for subject '${SUBJECT_ID}' file '${VOL_FILE}'. Subject not defaced." >> "${LOGFILE}"
     else
         if [ -f "${DEFACED_FILE}" ]; then
             mv "${DEFACED_FILE}" "${VOL_FILE}"
             if [ $? -ne 0 ]; then
-                echo "$APPTAG ERROR: Could not rename subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Exiting." >> "${LOGFILE}"
-                exit 1
+                echo "$APPTAG ERROR: Could not rename subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Subject not defaced." >> "${LOGFILE}"
             else
                 echo "$APPTAG INFO:  Successfully defaced subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'." >> "${LOGFILE}"
             fi
         else
-            echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced filed '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Exiting." >> "${LOGFILE}"
-            exit 1
+            echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced filed '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Subject not defaced." >> "${LOGFILE}"
         fi
     fi
 done
