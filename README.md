@@ -76,7 +76,7 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
   - how to check whether metadata is contained:
     * for talairach info: `mri_info <file> | grep talairach`
     * for command line history: `mri_info --cmds <file>`
-  - removal method: export `FS_SKIP_TAGS 1`, convert to NIFTI and back (using `mris_convert`).
+  - removal method: export `FS_SKIP_TAGS 1`, convert to NIFTI and back (using `mri_convert`).
 * label files (contains sections of a brain surface, defined by a vertex list):
   - example file: `anonsubject/label/lh.cortex.label`
   - contained metadata:
