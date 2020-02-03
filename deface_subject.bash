@@ -12,6 +12,7 @@ APPTAG="[DEFACE_SUBJECT]"
 if [ -z "$2" ]; then
   echo "$APPTAG ERROR: Arguments missing. Exiting."
   echo "$APPTAG INFO: Usage: $0 <subject_id> <subjects_dir> [<log_tag>]"
+  echo "$APPTAG INFO: This script requires that the FREESURFER_HOME environment variable is configured."
   echo "$APPTAG WARNING: +++++ Running this script will alter parts of your imaging data! +++++ "
   echo "$APPTAG WARNING: +++++       Only run this on an extra copy of your data!         +++++ "
   exit 1
@@ -27,7 +28,7 @@ if [ -z "$3" ]; then
 else
   DATE_TAG="$3"
 fi
-LOGFILE="anonsurfer_deface_${SUBJECT_ID}_${DATE_TAG}.log"
+LOGFILE="anonsurfer_subject_deface_${SUBJECT_ID}_${DATE_TAG}.log"
 
 
 #### check some basic stuff first
@@ -43,6 +44,11 @@ if [ ! -d "${SUBJECTS_DIR}/${SUBJECT_ID}" ]; then
   exit 1
 fi
 
+
+if [ -z "${FREESURFER_HOME}" ]; then
+    echo "$APPTAG ERROR: Environment variable FREESURFER_HOME not set, cannot find deface template volumes. Exiting." >> "${LOGFILE}"
+    exit 1
+fi
 
 #### Check deface tools
 SKULL_TEMPLATE="${FREESURFER_HOME}/average/talairach_mixed_with_skull.gca"
@@ -67,27 +73,47 @@ echo "$APPTAG INFO: --- Defacing subject '${SUBJECT_ID}' in directory '${SD}'. -
 # If you used several T1 images for a subject, you will have to add more files under orig.
 VOLUME_FILES_RELATIVE_TO_MRI_DIR="mri/orig.mgz mri/orig_nu.mgz mri/T1.mgz mri/rawavg.mgz mri/orig/001.mgz"
 
+NUM_TRIED=$(echo "${VOLUME_FILES_RELATIVE_TO_MRI_DIR}" | wc -w | tr -d '[:space:]')
+NUM_EXISTING=0
+NUM_OK=0
+NUM_MISSING=0
+NUM_FAILED=0
 for REL_VOL_FILE in $VOLUME_FILES_RELATIVE_TO_MRI_DIR; do
     VOL_FILE="${SD}/${REL_VOL_FILE}"
     if [ ! -f "${VOL_FILE}" ]; then
         echo "$APPTAG NOTICE: Subject '${SUBJECT_ID} has no file '${VOL_FILE}'. Continuing." >> "${LOGFILE}"
+        NUM_MISSING=$((NUM_MISSING+1))
         continue
     fi
-    DEFACED_FILE="${VOL_FILE}.defaced.mgz"
+    NUM_EXISTING=$((NUM_EXISTING+1))
+    DEFACED_FILE="${VOL_FILE}.defaced.mgz"   # temp name for defaced file, will be renamed to original file name later.
     echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' volume file '$VOL_FILE'."
-    mri_deface "${VOL_FILE}" "${SKULL_TEMPLATE}" "${FACE_TEMPLATE}" "${DEFACED_FILE}"
+    mri_deface "${VOL_FILE}" "${SKULL_TEMPLATE}" "${FACE_TEMPLATE}" "${DEFACED_FILE}" >> "${LOGFILE}" 2>&1
     if [ $? -ne 0 ]; then
         echo "$APPTAG ERROR: mri_deface command failed for subject '${SUBJECT_ID}' file '${VOL_FILE}'. Subject not defaced." >> "${LOGFILE}"
+        NUM_FAILED=$((NUM_FAILED+1))
     else
         if [ -f "${DEFACED_FILE}" ]; then
             mv "${DEFACED_FILE}" "${VOL_FILE}"
             if [ $? -ne 0 ]; then
                 echo "$APPTAG ERROR: Could not rename subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Subject not defaced." >> "${LOGFILE}"
+                NUM_FAILED=$((NUM_FAILED+1))
             else
                 echo "$APPTAG INFO:  Successfully defaced subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'." >> "${LOGFILE}"
+                NUM_OK=$((NUM_OK+1))
             fi
         else
             echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced filed '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Subject not defaced." >> "${LOGFILE}"
+            NUM_FAILED=$((NUM_FAILED+1))
         fi
     fi
 done
+
+if [ ${NUM_OK} -eq ${NUM_EXISTING} ]; then
+    STATUS="STATUS_ALL_GOOD"
+else
+    STATUS="STATUS_CHECK_ISSUES"
+fi
+
+echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final status: '${STATUS}'." >> "${LOGFILE}"
+echo "$APPTAG INFO: Subject '${SUBJECT_ID}' details: ${NUM_TRIED} volume files checked, ${NUM_EXISTING} found (${NUM_MISSING} missing), ${NUM_OK} successfully defaced, ${NUM_FAILED} failed." >> "${LOGFILE}"
