@@ -8,9 +8,9 @@ Anonymization of [FreeSurfer](http://freesurfer.net/) recon-all output based on 
 These are BASH shell scripts for the anonymization of neuroimaging data that has been created using the FreeSurfer `recon-all` pipeline. The goals are to:
 
 * Deface all relevant volume files, so the face of the person cannot be reconstructed from the 3D images.
-* Drop metadata in various recon-all output files that contains information on the original subject identifier.
+* Drop metadata in various recon-all output files that contain information on the original subject identifier.
 
-The first goal is rather straight-forward and easy to accomplish using [mri_deface](https://surfer.nmr.mgh.harvard.edu/fswiki/mri_deface), the second one is very hard. Be sure to read and understand the warning on the metadata below if you need this. 
+The first goal is rather straight-forward and easy to accomplish using [mri_deface](https://surfer.nmr.mgh.harvard.edu/fswiki/mri_deface), the second one is very hard. Be sure to read and understand the warnings on the metadata below if you need this. 
 
 In case you do not care about the metadata and just want a parallel version of `mri_deface`: There are separate scripts for the two tasks, you do not need to run both.
 
