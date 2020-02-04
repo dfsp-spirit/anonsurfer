@@ -38,14 +38,14 @@ The following files will be defaced for every subject by default:
 
 ### Verification of the mri_deface results
 
-I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain), a script that renders all relavant volumes of a subject is [available as an example client for the library here](https://github.com/dfsp-spirit/fsbrain/blob/master/web/examples/facecheck.R). I render pre- and post-deface images and manually inspect them to verify that mri_deface worked as expected. Here are two examples:
+I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain), a script that renders all relavant volumes of a subject is [available as an example client for the library here](https://github.com/dfsp-spirit/fsbrain/blob/master/web/examples/facecheck.R). I render pre- and post-deface images and manually inspect them to verify that `mri_deface` worked as expected. Here are two examples:
 
 Original volumes:
 
 ![original](https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_original.png?raw=true "Original volumes")
 
 
-After mri_deface pipeline run:
+After `mri_deface` pipeline run:
 ![Defaced](https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_defaced.png?raw=true "Defaced volumes")
 
 
