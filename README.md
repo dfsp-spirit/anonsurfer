@@ -36,6 +36,18 @@ The following files will be defaced for every subject by default:
 * `mri/rawavg.mgz`
 * `mri/orig/001.mgz`
 
+### Verification of the mri_deface results
+
+I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain), a script that renders all relavant volumes of a subject is [available as an example client for the library here](https://github.com/dfsp-spirit/fsbrain/blob/master/web/examples/facecheck.R). I render pre- and post-deface images and manually inspect them to verify that mri_deface worked as expected. Here are two examples:
+
+Original volumes:
+
+https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_original.png
+
+After mri_deface pipeline run:
+
+https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_defaced.png
+
 ## Metadata dropping
 
 **IMPORTANT: This pipeline will alter the FreeSurfer output data, e.g., overwrite voxels in brain volumes and change metadata in files like brain labels. You should only run it on a backup copy of your data that you want to anonomize. NEVER run this on your original data!**
