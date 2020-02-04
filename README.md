@@ -102,10 +102,10 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
 * lta files (transformation info):
   - example file: `anonsubject/mri/transforms/cc_up.lta`
   - **NOT handled yet**
-* stats files
+* stats files (text files containing volume and surface-based statistics)
   - example files: `stats/aseg.stats`
   - **NOT handled yet**
-* binary surface files
+* binary surface files (containing brain surface meshes)
   - example file: `surf/lh.white`
   - **NOT handled yet**
 
