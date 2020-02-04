@@ -42,11 +42,14 @@ I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain), a script t
 
 Original volumes:
 
-https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_original.png
+![original](https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_original.png?raw=true "Original volumes")
+
 
 After mri_deface pipeline run:
+![Defaced](https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_defaced.png?raw=true "Defaced volumes")
 
-https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_defaced.png
+
+
 
 ## Metadata dropping
 
