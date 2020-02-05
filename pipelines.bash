@@ -1,9 +1,9 @@
 #!/bin/bash
 # pipelines.bash -- run stuff in parallel over a number of subjects.
 #
-# This script is part of 'anonsurfer'.
+# This script is part of 'anonsurfer' -- https://github.com/dfsp-spirit/anonsurfer
 #
-# Written by Tim Schaefer, 2020-24-01
+# Written by Tim Schaefer, 2020-01-24
 #
 # This script checks the common requirements for the pipelines (basically the proper setup of FreeSurfer and the subject data).
 # If everything looks good, it uses GNU Parallel to run the respective pipeline in parallel over all subjects.
@@ -20,7 +20,7 @@ if [ -z "$4" ]; then
     echo "$APPTAG Usage: $0 <subjects_file> <subjects_dir> <task> [<num_proc>]"
     echo "$APPTAG    <subjects_file> : path to a textfile containing one subject per line"
     echo "$APPTAG    <subjects_dir>  : path to the FreeSurfer recon-all output (known as FreeSurfer SUBJECTS_DIR)."
-    echo "$APPTAG    <task>          : the action to perform, one of 'deface' or 'drop_metadata'."
+    echo "$APPTAG    <task>          : the action to perform, one of 'deface', 'deface_check', or 'drop_metadata'."
     echo "$APPTAG    <num_proc>      : number of processes (subjects) to run in parallel. Set to 0 for max for your machine."
     exit 1
 fi
@@ -103,10 +103,12 @@ EXEC_PATH_OF_THIS_SCRIPT=$(dirname $0)
 
 if [ "$TASK" = "deface" ]; then
     CARGO_SCRIPT="${EXEC_PATH_OF_THIS_SCRIPT}/deface_subject.bash"
+elif [ "$TASK" = "deface_check" ]; then
+    CARGO_SCRIPT="${EXEC_PATH_OF_THIS_SCRIPT}/deface_check_subject.bash"
 elif [ "$TASK" = "drop_metadata" ]; then
     CARGO_SCRIPT="${EXEC_PATH_OF_THIS_SCRIPT}/dropmd_subject.bash"
 else
-    echo "$APPTAG ERROR: The parameter 'task' must be exactly one of 'deface' or 'drop_metadata'. Exiting."
+    echo "$APPTAG ERROR: The parameter 'task' must be exactly one of 'deface', 'deface_check', or 'drop_metadata'. Exiting."
     exit 1
 fi
 
@@ -119,7 +121,7 @@ fi
 ############ execution, no need to mess with this. ############
 DATE_TAG=$(date '+%Y-%m-%d_%H-%M-%S')
 LOGFILE="anonsurfer_pipeline_${TASK}_${DATE_TAG}.log"
-echo "$APPTAG INFO: Starting pipeline, this may take a while. Logging all output to the logfile '${LOGFILE}' during the run."
+echo "$APPTAG INFO: Starting ${TASK} pipeline, this may take a while. Logging all output to the logfile '${LOGFILE}' during the run."
 echo ${SUBJECTS} | tr ' ' '\n' | parallel --jobs ${NUM_CONSECUTIVE_JOBS} --workdir . --joblog "${LOGFILE}" "$CARGO_SCRIPT {} ${SUBJECTS_DIR} ${DATE_TAG}"
 
 DATE_TAG_END=$(date '+%Y-%m-%d_%H-%M-%S')
