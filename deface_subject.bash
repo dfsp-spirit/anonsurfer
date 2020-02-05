@@ -1,7 +1,7 @@
 #!/bin/bash
 # deface_subject.bash -- run mri_deface for all volume files of a subject
 #
-# This script is part of 'anonsurfer'
+# This script is part of 'anonsurfer' -- https://github.com/dfsp-spirit/anonsurfer
 #
 ## Note that you can run this from run_deface.bash to apply it to several subjects in parallel.
 ## You can also call it manually for a single subject, of course.
@@ -103,7 +103,7 @@ for REL_VOL_FILE in $VOLUME_FILES_RELATIVE_TO_MRI_DIR; do
                 NUM_OK=$((NUM_OK+1))
             fi
         else
-            echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced filed '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Subject not defaced." >> "${LOGFILE}"
+            echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Subject not defaced." >> "${LOGFILE}"
             NUM_FAILED=$((NUM_FAILED+1))
         fi
     fi
