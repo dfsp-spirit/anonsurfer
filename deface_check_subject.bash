@@ -21,7 +21,9 @@ APPTAG="[DEFACE_CHECK_SUBJECT]"
 # - You can adapt the volumes you want to visualize directly in the script.
 if [ -z "${FACECHECK_SCRIPT}" ]; then
     FACECHECK_SCRIPT="${HOME}/develop/fsbrain/web/examples/facecheck.R"
-    echo "$APPTAG NOTICE: Environment variable 'FACECHECK_SCRIPT' not set, using path '${FACECHECK_SCRIPT}' from script header in 'deface_check_subject.bash'."
+    RSCRIPT_FROM="script"
+else
+    RSCRIPT_FROM="env"
 fi
 
 ## No need to mess with stuff below this line.
@@ -38,10 +40,6 @@ else
   SUBJECTS_DIR="$2"
 fi
 
-if [ ! -x "${FACECHECK_SCRIPT}" ]; then
-    echo "$APPTAG ERROR: The facecheck.R script from fsbrain at '${FACECHECK_SCRIPT}' does not exist or is not executable. Please fix or set the correct path in 'deface_check_subject.bash'. Exiting."
-    exit 1
-fi
 
 # Setup logging
 if [ -z "$3" ]; then
@@ -50,6 +48,18 @@ else
   DATE_TAG="$3"
 fi
 LOGFILE="anonsurfer_subject_visdeface_check_${SUBJECT_ID}_${DATE_TAG}.log"
+
+if [ "${RSCRIPT_FROM}" = "script" ]; then
+    echo "$APPTAG NOTICE: Environment variable 'FACECHECK_SCRIPT' not set, using path '${FACECHECK_SCRIPT}' from script header in 'deface_check_subject.bash'." >> "${LOGFILE}"
+else
+    echo "$APPTAG NOTICE: Environment variable 'FACECHECK_SCRIPT' set, using path '${FACECHECK_SCRIPT}' from environment." >> "${LOGFILE}"
+fi
+
+
+if [ ! -x "${FACECHECK_SCRIPT}" ]; then
+    echo "$APPTAG ERROR: The facecheck.R script from fsbrain at '${FACECHECK_SCRIPT}' does not exist or is not executable. Please fix or set the correct path in 'deface_check_subject.bash'. Exiting." >> "${LOGFILE}"
+    exit 1
+fi
 
 
 #### check some basic stuff first
@@ -74,10 +84,11 @@ echo "$APPTAG INFO: --- Visualizing subject '${SUBJECT_ID}' in directory '${SD}'
 
 
 echo "$APPTAG INFO: * Visualizing volumes of subject '${SUBJECT_ID}'."
+
 OUTPUT_IMAGE="facecheck_subject_${SUBJECT_ID}.png"
 ${FACECHECK_SCRIPT} "${SUBJECTS_DIR}" "${SUBJECT_ID}" "${OUTPUT_IMAGE}" >> "${LOGFILE}" 2>&1
 if [ $? -ne 0 ]; then
-    echo "$APPTAG ERROR: facecheck.R command failed for subject '${SUBJECT_ID}' file '${VOL_FILE}'. Subject not visualized." >> "${LOGFILE}"
+    echo "$APPTAG ERROR: facecheck.R command failed for subject '${SUBJECT_ID}' subjectsdir '${SUBJECTS_DIR}' output image '${OUTPUT_IMAGE}'. Subject not visualized." >> "${LOGFILE}"
 else
     if [ -f "${OUTPUT_IMAGE}" ]; then
         echo "$APPTAG INFO: Visualized subject '${SUBJECT_ID}', see output image file '${OUTPUT_IMAGE}'." >> "${LOGFILE}"
