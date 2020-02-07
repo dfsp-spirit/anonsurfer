@@ -49,6 +49,14 @@ SD = "${SUBJECTS_DIR}/${SUBJECT_ID}";
 echo "$APPTAG INFO: --- Dropping metadata for subject '${SUBJECT_ID}' in directory '${SD}'. ---" >> "${LOGFILE}"
 
 
+## Skip tags during MGZ writing. This ONLY affects MGH/MGZ files.
+## Explanation: The environment variable is checked in the FreeSurfer source code when MGH/MGZ files are written.
+## This happens in this script when the `mri_convert` command is run. Exporting this ensures that the last command
+## line (conversion back from NIFTI to MGZ) is not stored in the final MGZ file.
+FS_SKIP_TAGS=1
+export FS_SKIP_TAGS
+
+
 ## --------------------------------- Handle metadata in files in mri/ dir ---------------------------------------
 
 ## ------------- Handle MGZ volume files  -----------
