@@ -63,6 +63,7 @@ export FS_SKIP_TAGS
 
 echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/mri/" ]; then
+    find "$SD/mri/" -name "*.bak" -delete         # delete backups of log files
     VOLUME_FILES=$(find "$SD/mri/" -name '*.mgz');
     for VOL_FILE in $VOLUME_FILES; do
       if [ ! -f "${VOL_FILE}" ]; then
@@ -106,6 +107,7 @@ fi
 ## ------------- Handle ASCII label files  -----------
 echo "$APPTAG INFO: Handling data in sub directory 'label' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/label/" ]; then
+    find "$SD/label/" -name "*.bak" -delete         # delete backups of log files
     LABEL_FILES=$(find "$SD/label/" -name '*.label');
     for LABEL_FILE in $LABEL_FILES; do
         echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' ASCII label file '$LABEL_FILE'." >> "${LOGFILE}"
@@ -126,6 +128,7 @@ echo "$APPTAG INFO: Handling data in sub directory 'surf' for subject '${SUBJECT
 SURFACES="white pial inflated orig smoothwm orig.nofix inflated.nofix pial-outer-smoothed qsphere.nofix sphere"
 HEMIS="lh rh"
 if [ -d "$SD/surf/" ]; then
+    find "$SD/surf/" -name "*.bak" -delete         # delete backups of log files
     for SURFACE in $SURFACES; do
         for HEMI in $HEMIS; do
             SURFACE_FILE="$SD/surf/${HEMI}.${SURFACE}"
@@ -160,10 +163,13 @@ fi
 
 ## --------------------------------- Handle statistics files in stats/ dir ---------------------------------------
 if [ -d "$SD/stats/" ]; then
+    find "$SD/stats/" -name "*.bak" -delete         # delete backups of log files
     echo "$APPTAG WARNING: Sub directory 'stats' not handled yet." >> "${LOGFILE}"
 else
     echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'stats' sub directory. Continuing." >> "${LOGFILE}"
 fi
+
+
 
 
 echo "$APPTAG INFO: Finished metadata dropping for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
