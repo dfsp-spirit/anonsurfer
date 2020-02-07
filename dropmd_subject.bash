@@ -45,7 +45,7 @@ fi
 
 #### ok, lets go
 
-SD = "${SUBJECTS_DIR}/${SUBJECT_ID}";
+SD="${SUBJECTS_DIR}/${SUBJECT_ID}";
 echo "$APPTAG INFO: --- Dropping metadata for subject '${SUBJECT_ID}' in directory '${SD}'. ---" >> "${LOGFILE}"
 
 
@@ -62,46 +62,59 @@ export FS_SKIP_TAGS
 ## ------------- Handle MGZ volume files  -----------
 
 echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
-VOLUME_FILES=$(find "$SD/mri/" -name '*.mgz');
-for VOL_FILE in $VOLUME_FILES; do
-  if [ ! -f "${VOL_FILE}" ]; then
-      echo "$APPTAG NOTICE: Subject '${SUBJECT_ID} has no volume file '${VOL_FILE}'. Continuing." >> "${LOGFILE}"
-      continue
-  fi
-  NOMD_FILE="${VOL_FILE}.nii"
-  echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' metadata in volume file '$VOL_FILE'." >> "${LOGFILE}"
-  mri_convert "${VOL_FILE}" "${NOMD_FILE}"
-  if [ $? -ne 0 ]; then
-      echo "$APPTAG ERROR: mri_convert command failed for subject '${SUBJECT_ID}' volume file '${VOL_FILE}' (MGZ to NIFTI)." >> "${LOGFILE}"
-  else
-      if [ -f "${NOMD_FILE}" ]; then
-          mri_convert "${NOMD_FILE}" "${VOL_FILE}"
-          if [ $? -ne 0 ]; then
-              echo "$APPTAG ERROR: Could not convert subject '${SUBJECT_ID}' volume file '${NOMD_FILE}' back to '${VOL_FILE}' (NIFTI to MGZ)." >> "${LOGFILE}"
-          else
-              rm "${NOMD_FILE}"   # delete temporary NIFTI file
-              echo "$APPTAG INFO: Successfully dropped metadata in subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'." >> "${LOGFILE}"
-          fi
-      else
-          echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' no metadata NIFTI volume file '${NOMD_FILE}' after mri_convert command (even though it returned no error). MD not dropped." >> "${LOGFILE}"
+if [ -d "$SD/mri/" ]; then
+    VOLUME_FILES=$(find "$SD/mri/" -name '*.mgz');
+    for VOL_FILE in $VOLUME_FILES; do
+      if [ ! -f "${VOL_FILE}" ]; then
+          echo "$APPTAG NOTICE: Subject '${SUBJECT_ID} has no volume file '${VOL_FILE}'. Continuing." >> "${LOGFILE}"
+          continue
       fi
-  fi
-done
+      NOMD_FILE="${VOL_FILE}.nii"
+      echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' metadata in volume file '$VOL_FILE'." >> "${LOGFILE}"
+      mri_convert "${VOL_FILE}" "${NOMD_FILE}"
+      if [ $? -ne 0 ]; then
+          echo "$APPTAG ERROR: mri_convert command failed for subject '${SUBJECT_ID}' volume file '${VOL_FILE}' (MGZ to NIFTI)." >> "${LOGFILE}"
+      else
+          if [ -f "${NOMD_FILE}" ]; then
+              mri_convert "${NOMD_FILE}" "${VOL_FILE}"
+              if [ $? -ne 0 ]; then
+                  echo "$APPTAG ERROR: Could not convert subject '${SUBJECT_ID}' volume file '${NOMD_FILE}' back to '${VOL_FILE}' (NIFTI to MGZ)." >> "${LOGFILE}"
+              else
+                  rm "${NOMD_FILE}"   # delete temporary NIFTI file
+                  echo "$APPTAG INFO: Successfully dropped metadata in subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'." >> "${LOGFILE}"
+              fi
+          else
+              echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' no metadata NIFTI volume file '${NOMD_FILE}' after mri_convert command (even though it returned no error). MD not dropped." >> "${LOGFILE}"
+          fi
+      fi
+    done
+else
+    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'mri' sub directory. Continuing." >> "${LOGFILE}"
+fi
 
 
 ## --------------------------------- Handle metadata in files in label/ dir ---------------------------------------
 
 ## ------------- Handle ASCII label files  -----------
 echo "$APPTAG INFO: Handling data in sub directory 'label' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
-LABEL_FILES=$(find "$SD/label/" -name '*.label');
-for LABEL_FILE in $LABEL_FILES; do
-    echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' ASCII label file '$LABEL_FILE'." >> "${LOGFILE}"
-    sed --in-place "1s/.*/#! ascii label for anon subject/" "${LABEL_FILE}" >> "${LOGFILE}"
-    if [ $? -ne 0 ]; then
-        echo "$APPTAG ERROR: sed command failed for subject '${SUBJECT_ID}' label file '${LABEL_FILE}'." >> "${LOGFILE}"
-    fi
-done
-
+if [ -d "$SD/label/" ]; then
+    LABEL_FILES=$(find "$SD/label/" -name '*.label');
+    for LABEL_FILE in $LABEL_FILES; do
+        echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' ASCII label file '$LABEL_FILE'." >> "${LOGFILE}"
+        if [ "$OS" = "Darwin" ]; then
+            # gotta love MacOS and its BSD sed
+            SED_INLINE_COMMAND='sed -i "" '
+        else
+            SED_INLINE_COMMAND='sed --inline'
+        fi
+        $SED_INLINE_COMMAND "1s/.*/#! ascii label for anon subject/" "${LABEL_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command failed for subject '${SUBJECT_ID}' label file '${LABEL_FILE}'." >> "${LOGFILE}"
+        fi
+    done
+else
+    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'label' sub directory. Continuing." >> "${LOGFILE}"
+fi
 ## --------------------------------- Handle metadata in files in surf/ dir ---------------------------------------
 
 ## ------------- Handle surface files  -----------
@@ -110,32 +123,45 @@ echo "$APPTAG INFO: Handling data in sub directory 'surf' for subject '${SUBJECT
 # you manually created additional surfaces, you will have to add them here.
 SURFACES="white pial inflated orig smoothwm orig.nofix inflated.nofix pial-outer-smoothed qsphere.nofix sphere"
 HEMIS="lh rh"
-for SURFACE in $SURFACES; do
-    for HEMI in $HEMIS; do
-        SURFACE_FILE="$SD/surf/${HEMI}.${SURFACE}"
-        if [ -f "${SURFACE_FILE}" ]; then
-            echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' metadata in surface file '$SURFACE_FILE'." >> "${LOGFILE}"
-            NOMD_FILE="${SURFACE_FILE}.gii"
-            mris_convert "${SURFACE_FILE}" "${NOMD_FILE}"
-            if [ $? -ne 0 ]; then
-                echo "$APPTAG ERROR: mris_convert command failed for subject '${SUBJECT_ID}' surface file '${SURFACE_FILE}' (fssurf to GIFTI)." >> "${LOGFILE}"
-            else
-                if [ -f "${NOMD_FILE}" ]; then
-                    mris_convert "${NOMD_FILE}" "${SURFACE_FILE}"
-                    if [ $? -ne 0 ]; then
-                        echo "$APPTAG ERROR: Could not convert subject '${SUBJECT_ID}' GIFTI surface file '${NOMD_FILE}' back to '${SURFACE_FILE}' (GIFTI to fssurf)." >> "${LOGFILE}"
-                    else
-                        rm "${NOMD_FILE}" # delete temporary GIFTI file
-                        echo "$APPTAG INFO: Successfully dropped metadata in subject '${SUBJECT_ID}' brain surface '${SURFACE_FILE}'." >> "${LOGFILE}"
-                    fi
+if [ -d "$SD/surf/" ]; then
+    for SURFACE in $SURFACES; do
+        for HEMI in $HEMIS; do
+            SURFACE_FILE="$SD/surf/${HEMI}.${SURFACE}"
+            if [ -f "${SURFACE_FILE}" ]; then
+                echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' metadata in surface file '$SURFACE_FILE'." >> "${LOGFILE}"
+                NOMD_FILE="${SURFACE_FILE}.gii"
+                mris_convert "${SURFACE_FILE}" "${NOMD_FILE}"
+                if [ $? -ne 0 ]; then
+                    echo "$APPTAG ERROR: mris_convert command failed for subject '${SUBJECT_ID}' surface file '${SURFACE_FILE}' (fssurf to GIFTI)." >> "${LOGFILE}"
                 else
-                    echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' no metadata GIFTI surface file '${NOMD_FILE}' after mris_convert command (even though it returned no error). MD not dropped." >> "${LOGFILE}"
+                    if [ -f "${NOMD_FILE}" ]; then
+                        mris_convert "${NOMD_FILE}" "${SURFACE_FILE}"
+                        if [ $? -ne 0 ]; then
+                            echo "$APPTAG ERROR: Could not convert subject '${SUBJECT_ID}' GIFTI surface file '${NOMD_FILE}' back to '${SURFACE_FILE}' (GIFTI to fssurf)." >> "${LOGFILE}"
+                        else
+                            rm "${NOMD_FILE}" # delete temporary GIFTI file
+                            echo "$APPTAG INFO: Successfully dropped metadata in subject '${SUBJECT_ID}' brain surface '${SURFACE_FILE}'." >> "${LOGFILE}"
+                        fi
+                    else
+                        echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' no metadata GIFTI surface file '${NOMD_FILE}' after mris_convert command (even though it returned no error). MD not dropped." >> "${LOGFILE}"
+                    fi
                 fi
+            else
+                echo "$APPTAG NOTICE: subject '${SUBJECT_ID}' has no surface file for surface '$SURFACE' hemi '$HEMI' at '${SURFACE_FILE}'." >> "${LOGFILE}"
             fi
-        else
-            echo "$APPTAG NOTICE: subject '${SUBJECT_ID}' has no surface file for surface '$SURFACE' hemi '$HEMI' at '${SURFACE_FILE}'." >> "${LOGFILE}"
-        fi
+        done
     done
-done
+else
+    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'surf' sub directory. Continuing." >> "${LOGFILE}"
+fi
+
+
+## --------------------------------- Handle statistics files in stats/ dir ---------------------------------------
+if [ -d "$SD/stats/" ]; then
+    echo "$APPTAG WARNING: Sub directory 'stats' not handled yet." >> "${LOGFILE}"
+else
+    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'stats' sub directory. Continuing." >> "${LOGFILE}"
+fi
+
 
 echo "$APPTAG INFO: Finished metadata dropping for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
