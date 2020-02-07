@@ -101,6 +101,11 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
   - removal method: replace the ID part in the files using regex and standard POSIX shell tools (e.g., `sed`)
 * lta files (transformation info):
   - example file: `anonsubject/mri/transforms/cc_up.lta`
+  - contained metadata:
+    * path to source volume in first `filename` line includes the ID as part of the path (some lta files only)
+  - how to check whether metadata is contained:
+    * run `grep filename <lta_file>`
+  - removal method: not sure yet. Maybe rewrite the filename lines using `sed`.
   - **NOT handled yet**
 * stats files (text files containing volume and surface-based statistics)
   - example files: `stats/aseg.stats`
@@ -111,8 +116,7 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
     * behind the surface data part may follow tags, which can include the command line history tag
   - how to check whether metadata is contained:
     * run `mris_info <surface_file>` to see metadata or use `strings` command
-  - removal method: convert to GIFTII and back (using `mris_convert`). Note: `FS_SKIP_TAGS` does not seem to affect surface conversion / writing.
-  - **NOT handled yet**
+  - removal method: convert to GIFTI and back (using `mris_convert`). Note: `FS_SKIP_TAGS` does not seem to affect surface conversion / writing.
 
 *Please report by [opening an issue](https://github.com/dfsp-spirit/anonsurfer/issues/new) if you find the ID in file types in these directories which are not listed above.*
 
