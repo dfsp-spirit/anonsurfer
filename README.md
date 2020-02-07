@@ -87,7 +87,7 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
   - example file: `anonsubject/mri/brain.mgz`
   - contained metadata: 
     * original full absolute path to talairach file, including the ID in the source path
-    * history of shell commands run on the file
+    * history of shell commands run on the file (in tags)
   - how to check whether metadata is contained:
     * for talairach info: `mri_info <file> | grep talairach`
     * for command line history: `mri_info --cmds <file>`
@@ -107,6 +107,11 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
   - **NOT handled yet**
 * binary surface files (containing brain surface meshes)
   - example file: `surf/lh.white`
+  - contained metadata:
+    * behind the surface data part may follow tags, which can include the command line history tag
+  - how to check whether metadata is contained:
+    * run `mris_info <surface_file>` to see metadata or use `strings` command
+  - removal method: convert to GIFTII and back (using `mris_convert`). Note: `FS_SKIP_TAGS` does not seem to affect surface conversion / writing.
   - **NOT handled yet**
 
 *Please report by [opening an issue](https://github.com/dfsp-spirit/anonsurfer/issues/new) if you find the ID in file types in these directories which are not listed above.*
