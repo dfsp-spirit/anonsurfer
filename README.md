@@ -109,6 +109,10 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
   - **NOT handled yet**
 * stats files (text files containing volume and surface-based statistics)
   - example files: `stats/aseg.stats`
+  - contained metadata: the files contain various comment lines that include the subject ID
+  - how to check whether metadata is contained:
+    * these are text files, just `cat` them
+  - removal method: not sure yet. Maybe strip all comment lines? They may be needed though.
   - **NOT handled yet**
 * binary surface files (containing brain surface meshes)
   - example file: `surf/lh.white`
