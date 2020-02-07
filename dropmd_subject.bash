@@ -95,18 +95,20 @@ fi
 
 ## --------------------------------- Handle metadata in files in label/ dir ---------------------------------------
 
+if [ "$OS" = "Darwin" ]; then
+    # gotta love MacOS and its BSD sed.
+    SED_INLINE_COMMAND='sed -i "" '
+else
+    SED_INLINE_COMMAND='sed --inline'
+fi
+
+
 ## ------------- Handle ASCII label files  -----------
 echo "$APPTAG INFO: Handling data in sub directory 'label' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/label/" ]; then
     LABEL_FILES=$(find "$SD/label/" -name '*.label');
     for LABEL_FILE in $LABEL_FILES; do
         echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' ASCII label file '$LABEL_FILE'." >> "${LOGFILE}"
-        if [ "$OS" = "Darwin" ]; then
-            # gotta love MacOS and its BSD sed
-            SED_INLINE_COMMAND='sed -i "" '
-        else
-            SED_INLINE_COMMAND='sed --inline'
-        fi
         $SED_INLINE_COMMAND "1s/.*/#! ascii label for anon subject/" "${LABEL_FILE}" >> "${LOGFILE}"
         if [ $? -ne 0 ]; then
             echo "$APPTAG ERROR: sed command failed for subject '${SUBJECT_ID}' label file '${LABEL_FILE}'." >> "${LOGFILE}"
