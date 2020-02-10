@@ -48,8 +48,7 @@ Original volumes for one subject:
 After `mri_deface` pipeline run:
 ![Defaced](https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_defaced.png?raw=true "Defaced volumes")
 
-The 5 volumes in each image are the ones listed above, in the same order. Note that `rawavg.mgz` and `001.mgz` are not conformed, so their orientation differs. You can adapt the script to rotate them if you prefer, but I feel it's not needed.
-
+The 5 volumes in each image are the ones listed above, in the same order. Note that `rawavg.mgz` and `001.mgz` are not conformed, so their orientation differs. You can adapt the script to rotate them -- whether or not that is needed depends on the orientation of the scanner output.
 
 ## Metadata dropping
 
