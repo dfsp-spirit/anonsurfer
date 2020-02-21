@@ -5,8 +5,17 @@
 #
 ## Note that you can run this from run_dropmd.bash to apply it to several subjects in parallel.
 ## You can also call it manually for a single subject, of course.
+#
+# Under MacOS, you will have to install GNU sed for this to work: `brew install gnu-sed`. See 'SEC_COMMAND' setting below.
 
 APPTAG="[DROPMD_SUBJECT]"
+
+if [ "$OS" = "Darwin" ]; then
+    SED_COMMAND='gsed'
+else
+    SED_COMMAND='sed'
+fi
+
 
 # Parse command line arguments
 if [ -z "$2" ]; then
@@ -66,6 +75,7 @@ export FS_SKIP_TAGS
 
 echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/mri/" ]; then
+    find "$SD/mri/" -name "*.log" -delete         # delete log files
     find "$SD/mri/" -name "*.bak" -delete         # delete backups of log files
     VOLUME_FILES=$(find "$SD/" -name '*.mgz' -o -name '*.mgh');
     for VOL_FILE in $VOLUME_FILES; do
@@ -102,14 +112,29 @@ fi
 
 cd "${ORIGINAL_WORKING_DIR}"
 
+## ------------- Handle lta files  -----------
+
+LTA_FILES=$(find "$SD/mri/" -name '*.lta');
+for LTA_FILE in $LTA_FILES; do
+    echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' LTA file '$LTA_FILE'." >> "${LOGFILE}"
+    $SED_COMMAND --in-place '/# created by/c\# created by anonymous' "${LTA_FILE}" >> "${LOGFILE}"
+    if [ $? -ne 0 ]; then
+        echo "$APPTAG ERROR: sed command changing creator failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
+    fi
+    $SED_COMMAND --in-place '/# transform file/c\# transform file' "${LTA_FILE}" >> "${LOGFILE}"
+    if [ $? -ne 0 ]; then
+        echo "$APPTAG ERROR: sed command changing first line with LTA file name failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
+    fi
+    $SED_COMMAND --in-place '/filename =/c\filename = mri/norm.mgz' "${LTA_FILE}" >> "${LOGFILE}"
+    if [ $? -ne 0 ]; then
+        echo "$APPTAG ERROR: sed command changing filename transform file line failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
+    fi
+done
+
+
 ## --------------------------------- Handle metadata in files in label/ dir ---------------------------------------
 
-if [ "$OS" = "Darwin" ]; then
-    # gotta love MacOS and its BSD sed.
-    SED_INLINE_COMMAND='sed -i "" '
-else
-    SED_INLINE_COMMAND='sed --inline'
-fi
+
 
 
 ## ------------- Handle ASCII label files  -----------
@@ -119,7 +144,7 @@ if [ -d "$SD/label/" ]; then
     LABEL_FILES=$(find "$SD/label/" -name '*.label');
     for LABEL_FILE in $LABEL_FILES; do
         echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' ASCII label file '$LABEL_FILE'." >> "${LOGFILE}"
-        $SED_INLINE_COMMAND "1s/.*/#! ascii label for anon subject/" "${LABEL_FILE}" >> "${LOGFILE}"
+        $SED_COMMAND --in-place "1s/.*/#! ascii label for anon subject/" "${LABEL_FILE}" >> "${LOGFILE}"
         if [ $? -ne 0 ]; then
             echo "$APPTAG ERROR: sed command failed for subject '${SUBJECT_ID}' label file '${LABEL_FILE}'." >> "${LOGFILE}"
         fi
