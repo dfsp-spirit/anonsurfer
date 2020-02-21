@@ -75,8 +75,6 @@ export FS_SKIP_TAGS
 
 echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/mri/" ]; then
-    find "$SD/mri/" -name "*.log" -delete         # delete log files
-    find "$SD/mri/" -name "*.bak" -delete         # delete backups of log files
     VOLUME_FILES=$(find "$SD/" -name '*.mgz' -o -name '*.mgh');
     for VOL_FILE in $VOLUME_FILES; do
       cd "${ORIGINAL_WORKING_DIR}"
@@ -106,30 +104,36 @@ if [ -d "$SD/mri/" ]; then
           fi
       fi
     done
+
+    cd "${ORIGINAL_WORKING_DIR}"
+
+    ## ------------- Handle lta files  -----------
+
+    LTA_FILES=$(find "$SD/mri/" -name '*.lta');
+    for LTA_FILE in $LTA_FILES; do
+        echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' LTA file '$LTA_FILE'." >> "${LOGFILE}"
+        $SED_COMMAND --in-place '/# created by/c\# created by anonymous' "${LTA_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command changing creator failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
+        fi
+        $SED_COMMAND --in-place '/# transform file/c\# transform file' "${LTA_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command changing first line with LTA file name failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
+        fi
+        $SED_COMMAND --in-place '/filename =/c\filename = mri/norm.mgz' "${LTA_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command changing filename transform file line failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
+        fi
+    done
+
+    find "$SD/mri/" -name "*.log" -delete         # delete log files
+    find "$SD/mri/" -name "*.bak" -delete         # delete backups of log files
+
 else
     echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'mri' sub directory. Continuing." >> "${LOGFILE}"
 fi
 
 cd "${ORIGINAL_WORKING_DIR}"
-
-## ------------- Handle lta files  -----------
-
-LTA_FILES=$(find "$SD/mri/" -name '*.lta');
-for LTA_FILE in $LTA_FILES; do
-    echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' LTA file '$LTA_FILE'." >> "${LOGFILE}"
-    $SED_COMMAND --in-place '/# created by/c\# created by anonymous' "${LTA_FILE}" >> "${LOGFILE}"
-    if [ $? -ne 0 ]; then
-        echo "$APPTAG ERROR: sed command changing creator failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
-    fi
-    $SED_COMMAND --in-place '/# transform file/c\# transform file' "${LTA_FILE}" >> "${LOGFILE}"
-    if [ $? -ne 0 ]; then
-        echo "$APPTAG ERROR: sed command changing first line with LTA file name failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
-    fi
-    $SED_COMMAND --in-place '/filename =/c\filename = mri/norm.mgz' "${LTA_FILE}" >> "${LOGFILE}"
-    if [ $? -ne 0 ]; then
-        echo "$APPTAG ERROR: sed command changing filename transform file line failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
-    fi
-done
 
 
 ## --------------------------------- Handle metadata in files in label/ dir ---------------------------------------
@@ -140,7 +144,6 @@ done
 ## ------------- Handle ASCII label files  -----------
 echo "$APPTAG INFO: Handling data in sub directory 'label' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/label/" ]; then
-    find "$SD/label/" -name "*.bak" -delete         # delete backups of log files
     LABEL_FILES=$(find "$SD/label/" -name '*.label');
     for LABEL_FILE in $LABEL_FILES; do
         echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' ASCII label file '$LABEL_FILE'." >> "${LOGFILE}"
@@ -149,6 +152,7 @@ if [ -d "$SD/label/" ]; then
             echo "$APPTAG ERROR: sed command failed for subject '${SUBJECT_ID}' label file '${LABEL_FILE}'." >> "${LOGFILE}"
         fi
     done
+    find "$SD/label/" -name "*.bak" -delete         # delete backups of log files
 else
     echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'label' sub directory. Continuing." >> "${LOGFILE}"
 fi
@@ -161,8 +165,6 @@ echo "$APPTAG INFO: Handling data in sub directory 'surf' for subject '${SUBJECT
 SURFACES="white pial inflated orig smoothwm orig.nofix inflated.nofix pial-outer-smoothed qsphere.nofix sphere sphere.reg white.preaparc"
 HEMIS="lh rh"
 if [ -d "$SD/surf/" ]; then
-    find "$SD/surf/" -name "*.log" -delete         # delete surface log files
-    find "$SD/surf/" -name "*.bak" -delete         # delete backups of log files
     for SURFACE in $SURFACES; do
         for HEMI in $HEMIS; do
             SURFACE_FILE="$SD/surf/${HEMI}.${SURFACE}"
@@ -190,6 +192,8 @@ if [ -d "$SD/surf/" ]; then
             fi
         done
     done
+    find "$SD/surf/" -name "*.log" -delete         # delete surface log files
+    find "$SD/surf/" -name "*.bak" -delete         # delete backups of log files
 else
     echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'surf' sub directory. Continuing." >> "${LOGFILE}"
 fi
