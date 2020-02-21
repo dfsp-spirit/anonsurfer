@@ -80,6 +80,8 @@ Also keep in mind that this pipeline does **not** try to remove personal data of
 
 ### How metadata dropping works
 
+*Note*: Metadata dropping is implemented in a way that does **not** require the script to know the ID it should replace. I.e., it does not simply replace all occurences of the ID (which may be a very bad idea if the ID is a string that occurs elsewhere in a file), but it uses knowledge on the FreeSurfer v6 output structure and file formats to change places in the files that contain ID strings.
+
 Metadata and dropping method by file format, for the directories `mri`, `surf`, `stats`, `label`:
 
 * mgh/mgz files (contains 3 or 4-dimensional brain volumes or 1D morph data): 
@@ -159,16 +161,19 @@ If any errors occurred, the log lines contain the string `ERROR:`.
 
 These scripts can be used with [GNU parallel](https://www.gnu.org/software/parallel/) to process several subjects in parallel. Keep in mind that some of the tasks are quite I/O heavy though, so if you have a machine with many cores but slow storage, you *may* be better off **not** using all cores.
 
-A very rough guide to estimate the runtime of the pipelines:
+Parallelization happens on subject level (i.e., all files of one subject are processed by the same core, and different cores handle different subjects).
 
-* **deface pipeline**: On a modern CPU, defacing takes roughly 2 minutes per volume file. A typical subject has 5 volume files that need to be defaced.
-* **drop metadata pipeline**: Converting an MGH/MGZ volume to NIFTI and back takes < 3 seconds (and may depend more on IO than your CPU). A typical subject has about 30 volume files that need to be converted.
+A very rough guide to estimate the runtime of the pipelines for one subject (on one core):
 
-Parallelization happens on subject level, **not** on file level. 
+* **deface pipeline**: About 10 minutes in total: defacing takes roughly 2 minutes per volume file, and a typical subject has 5 volume files that need to be defaced. The bottleneck will be CPU here.
+* **drop metadata pipeline**: About 5 minutes in total, but this may increase if you run too many in parallel and disk IO becomes a bottleneck.
+
+These times are for a 2019 desktop system (4.2 GHz i7 CPU, SSD).
 
 
 ## System Requirements
 
 * Linux or MacOS system (with BASH shell installed)
+  - Under MacOS, you will need to install GNU sed if you intend to use the deface pipeline. Easiest via [homebrew](https://brew.sh/ ): `brew install gnu-sed`
 * [FreeSurfer](http://freesurfer.net/) installed and configured for the BASH shell (e.g., environment variable FREESURFER_HOME set)
 * [GNU parallel](https://www.gnu.org/software/parallel/)
