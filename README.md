@@ -167,7 +167,7 @@ Parallelization happens on subject level (i.e., all files of one subject are pro
 A very rough guide to estimate the runtime of the pipelines for one subject (on one core):
 
 * **deface pipeline**: About 10 minutes in total: defacing takes roughly 2 minutes per volume file, and a typical subject has 5 volume files that need to be defaced. The bottleneck will be CPU here.
-* **deface check pipeline**: Roughly 2 minutes per subject (for the 5 volume files).
+* **deface check pipeline**: About 2 minutes in total (for the overview image showing the 5 volume files).
 * **drop metadata pipeline**: About 5 minutes in total, but this may increase if you run too many in parallel and disk IO becomes a bottleneck.
 
 These times are for a 2019 desktop system (4.2 GHz i7 CPU, SSD).
