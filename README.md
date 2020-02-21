@@ -101,11 +101,14 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
 * lta files (transformation info):
   - example file: `anonsubject/mri/transforms/cc_up.lta`
   - contained metadata:
-    * path to source volume in first `filename` line includes the ID as part of the path (some lta files only)
+    * first line in a comment containing the full path to the LTA file itself, including the ID directory
+    * path to source volume in `filename =` lines includes the ID as part of the path (some lta files only)
   - how to check whether metadata is contained:
-    * run `grep filename <lta_file>`
-  - removal method: not sure yet. Maybe rewrite the filename lines using `sed`.
-  - **NOT handled yet**
+    * run `head -n 1 <file>` for the comment line
+    * run `grep filename <lta_file>` for filename lines
+  - removal method: 
+    * Rewrite first line using `sed`, removing the full path to the LTA file (but keeping the rest of the line)
+    * Rewrite the filename lines using `sed`, replacing the full path with the hard-coded string `mri/norm.mgz`.    
 * stats files (text files containing volume and surface-based statistics)
   - example files: `stats/aseg.stats`
   - contained metadata: the files contain various comment lines that include the subject ID
