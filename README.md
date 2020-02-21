@@ -108,13 +108,20 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
     * run `grep filename <lta_file>` for filename lines
   - removal method: 
     * Rewrite first line using `sed`, removing the full path to the LTA file (but keeping the rest of the line)
-    * Rewrite the filename lines using `sed`, replacing the full path with the hard-coded string `mri/norm.mgz`.    
+    * Rewrite the filename lines using `sed`, replacing the full path with the hard-coded string `REPLACED_BY_ANONSURFER`.    
 * stats files (text files containing volume and surface-based statistics)
   - example files: `stats/aseg.stats`
-  - contained metadata: the files contain various comment lines that include the subject ID
+  - contained metadata: the files contain various comment lines that include the subject ID, including the comment lines for:
+    * `cmdline`
+    * `user`
+    * `SUBJECTS_DIR`
+    * `subjectname`
+    * `ColorTable`
+    * `InVolFile`
+    * `Annot`
   - how to check whether metadata is contained:
-    * these are text files, just `cat` them
-  - removal method: not sure yet. Maybe strip all comment lines? They may be needed though.
+    * these are text files, just `cat` them or grep for the keywords above
+  - removal method: rewrite only the comment lines above, replacing the content after the tag with the hardcoded string `REPLACED_BY_ANONSURFER`
   - **NOT handled yet**
 * binary surface files (containing brain surface meshes)
   - example file: `surf/lh.white`
