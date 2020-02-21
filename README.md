@@ -174,5 +174,6 @@ These times are for a 2019 desktop system (4.2 GHz i7 CPU, SSD).
 ## System Requirements
 
 * Linux or MacOS system (with BASH shell installed)
+  - Under MacOS, you will need to install GNU sed if you intend to use the deface pipeline. Easiest via [homebrew](https://brew.sh/ ): `brew install gnu-sed`
 * [FreeSurfer](http://freesurfer.net/) installed and configured for the BASH shell (e.g., environment variable FREESURFER_HOME set)
 * [GNU parallel](https://www.gnu.org/software/parallel/)
