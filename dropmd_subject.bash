@@ -162,7 +162,7 @@ fi
 echo "$APPTAG INFO: Handling data in sub directory 'surf' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 # This is ugly: the surface files cannot be identified by their file extension (they have none), so we need to know them. If
 # you manually created additional surfaces, you will have to add them here.
-SURFACES="white pial inflated orig smoothwm orig.nofix inflated.nofix pial-outer-smoothed qsphere.nofix sphere sphere.reg white.preaparc"
+SURFACES="white pial inflated orig smoothwm smoothwm.nofix orig.nofix inflated.nofix pial-outer-smoothed qsphere.nofix sphere sphere.reg white.preaparc"
 HEMIS="lh rh"
 if [ -d "$SD/surf/" ]; then
     for SURFACE in $SURFACES; do
@@ -251,5 +251,9 @@ if [ -d "$SD/stats/" ]; then
 else
     echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'stats' sub directory. Continuing." >> "${LOGFILE}"
 fi
+
+# Delete temporary junk files that may or may not exist. They can contain the user ID of the person who started recon-all.
+find "${SD}" -name "sum.junk" -delete
+
 
 echo "$APPTAG INFO: Finished metadata dropping for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
