@@ -116,11 +116,11 @@ if [ -d "$SD/mri/" ]; then
         if [ $? -ne 0 ]; then
             echo "$APPTAG ERROR: sed command changing creator failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
         fi
-        $SED_COMMAND --in-place '/# transform file/c\# transform file' "${LTA_FILE}" >> "${LOGFILE}"
+        $SED_COMMAND --in-place '/# transform file/c\# transform file REMOVED_BY_ANONSURFER' "${LTA_FILE}" >> "${LOGFILE}"
         if [ $? -ne 0 ]; then
             echo "$APPTAG ERROR: sed command changing first line with LTA file name failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
         fi
-        $SED_COMMAND --in-place '/filename =/c\filename = mri/norm.mgz' "${LTA_FILE}" >> "${LOGFILE}"
+        $SED_COMMAND --in-place '/filename =/c\filename = REMOVED_BY_ANONSURFER' "${LTA_FILE}" >> "${LOGFILE}"
         if [ $? -ne 0 ]; then
             echo "$APPTAG ERROR: sed command changing filename transform file line failed for subject '${SUBJECT_ID}' LTA file '${LTA_FILE}'." >> "${LOGFILE}"
         fi
@@ -201,8 +201,53 @@ fi
 
 ## --------------------------------- Handle statistics files in stats/ dir ---------------------------------------
 if [ -d "$SD/stats/" ]; then
+
+    STATS_FILES=$(find "$SD/stats/" -name '*.stats');
+    for STAT_FILE in $STATS_FILES; do
+        echo "$APPTAG INFO: Handling subject '${SUBJECT_ID}' stats file '$STAT_FILE'." >> "${LOGFILE}"
+
+        $SED_COMMAND --in-place '/# cmdline/c\# cmdline mris_anatomical_stats REMOVED_BY_ANONSURFER' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'cmdline' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+
+        $SED_COMMAND --in-place '/# user/c\# user anonymous' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'user' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+
+        $SED_COMMAND --in-place '/# hostname/c\# hostname box' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'hostname' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+
+        $SED_COMMAND --in-place '/# SUBJECTS_DIR/c\# SUBJECTS_DIR REMOVED_BY_ANONSURFER' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'SUBJECTS_DIR' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+
+        $SED_COMMAND --in-place '/# subjectname/c\# subjectname REMOVED_BY_ANONSURFER' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'subjectname' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+
+        $SED_COMMAND --in-place '/# ColorTable /c\# ColorTable REMOVED_BY_ANONSURFER' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'ColorTable' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+
+        $SED_COMMAND --in-place '/# InVolFile /c\# InVolFile REMOVED_BY_ANONSURFER' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'InVolFile' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+
+        $SED_COMMAND --in-place '/# Annot /c\# Annot REMOVED_BY_ANONSURFER' "${STAT_FILE}" >> "${LOGFILE}"
+        if [ $? -ne 0 ]; then
+            echo "$APPTAG ERROR: sed command handling 'InVolFile' failed for subject '${SUBJECT_ID}' stat file '${STAT_FILE}'." >> "${LOGFILE}"
+        fi
+    done
+
     find "$SD/stats/" -name "*.bak" -delete         # delete backups of log files
-    echo "$APPTAG WARNING: Sub directory 'stats' not handled yet." >> "${LOGFILE}"
 else
     echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'stats' sub directory. Continuing." >> "${LOGFILE}"
 fi
