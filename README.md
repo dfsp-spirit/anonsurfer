@@ -122,7 +122,6 @@ Metadata and dropping method by file format, for the directories `mri`, `surf`, 
   - how to check whether metadata is contained:
     * these are text files, just `cat` them or grep for the keywords above
   - removal method: rewrite only the comment lines above, replacing the content after the tag with the hardcoded string `REPLACED_BY_ANONSURFER`
-  - **NOT handled yet**
 * binary surface files (containing brain surface meshes)
   - example file: `surf/lh.white`
   - contained metadata:
