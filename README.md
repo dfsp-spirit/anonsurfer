@@ -80,6 +80,8 @@ Also keep in mind that this pipeline does **not** try to remove personal data of
 
 ### How metadata dropping works
 
+*Note*: Metadata dropping is implemented in a way that does **not** require the script to know the ID it should replace. I.e., it does not simply replace all occurences of the ID (which may be a very bad idea if the ID is a string that occurs elsewhere in a file), but it uses knowledge on the FreeSurfer v6 output structure and file formats to change places in the files that contain ID strings.
+
 Metadata and dropping method by file format, for the directories `mri`, `surf`, `stats`, `label`:
 
 * mgh/mgz files (contains 3 or 4-dimensional brain volumes or 1D morph data): 
