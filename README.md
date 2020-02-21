@@ -44,11 +44,12 @@ Original volumes for one subject:
 
 ![original](https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_original.png?raw=true "Original volumes, from left to right: orig, orig_nu, T1, rawavg, 001.")
 
-
 After `mri_deface` pipeline run:
 ![Defaced](https://github.com/dfsp-spirit/fsbrain/raw/master/web/examples/facecheck_subject1_defaced.png?raw=true "Defaced volumes, from left to right: orig, orig_nu, T1, rawavg, 001.")
 
 The 5 volumes in each image are the ones listed above, in the same order. Note that `rawavg.mgz` and `001.mgz` are not conformed, so their orientation differs. The latest version of the script automatically rotates them to the standard orientation.
+
+If you want to use the deface check pipeline, run the script `run_deface_check.bash`. See the `run_deface_check_subject.bash` script for installation instructions.
 
 ## Metadata dropping
 
@@ -166,6 +167,7 @@ Parallelization happens on subject level (i.e., all files of one subject are pro
 A very rough guide to estimate the runtime of the pipelines for one subject (on one core):
 
 * **deface pipeline**: About 10 minutes in total: defacing takes roughly 2 minutes per volume file, and a typical subject has 5 volume files that need to be defaced. The bottleneck will be CPU here.
+* **deface check pipeline**: Roughly 2 minutes per subject (for the 5 volume files).
 * **drop metadata pipeline**: About 5 minutes in total, but this may increase if you run too many in parallel and disk IO becomes a bottleneck.
 
 These times are for a 2019 desktop system (4.2 GHz i7 CPU, SSD).
