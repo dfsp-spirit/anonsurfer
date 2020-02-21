@@ -26,7 +26,10 @@ if [ -z "$3" ]; then
 else
   DATE_TAG="$3"
 fi
-LOGFILE="anonsurfer_subject_dropmd_${SUBJECT_ID}_${DATE_TAG}.log"
+
+
+ORIGINAL_WORKING_DIR=$(pwd)
+LOGFILE="${ORIGINAL_WORKING_DIR}/anonsurfer_subject_dropmd_${SUBJECT_ID}_${DATE_TAG}.log"
 
 
 #### check some basic stuff first
@@ -57,42 +60,47 @@ FS_SKIP_TAGS=1
 export FS_SKIP_TAGS
 
 
-## --------------------------------- Handle metadata in files in mri/ dir ---------------------------------------
+## --------------------------------- Handle metadata in files in mri/ and all other dirs ---------------------------------------
 
-## ------------- Handle MGZ volume files  -----------
+## ------------- Handle MGZ and MGH volume files  -----------
 
 echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/mri/" ]; then
     find "$SD/mri/" -name "*.bak" -delete         # delete backups of log files
-    VOLUME_FILES=$(find "$SD/mri/" -name '*.mgz');
+    VOLUME_FILES=$(find "$SD/" -name '*.mgz' -o -name '*.mgh');
     for VOL_FILE in $VOLUME_FILES; do
+      cd "${ORIGINAL_WORKING_DIR}"
       if [ ! -f "${VOL_FILE}" ]; then
-          echo "$APPTAG NOTICE: Subject '${SUBJECT_ID} has no volume file '${VOL_FILE}'. Continuing." >> "${LOGFILE}"
+          echo "$APPTAG NOTICE: Subject '${SUBJECT_ID} has no volume file '${VOL_FILE}'. Strange. Continuing." >> "${LOGFILE}"
           continue
       fi
-      NOMD_FILE="${VOL_FILE}.nii"
+      VOL_FILE_DIR=$(dirname "${VOL_FILE}")
+      VOL_FILE_BASENAME=$(basename "${VOL_FILE}")
+      cd "$VOL_FILE_DIR"     # We needc to change the working directory, it seems to get encoded somewhere in the MGH file, even without tags.
+      NOMD_FILE="${VOL_FILE_BASENAME}.nii"
       echo "$APPTAG INFO: * Handling subject '${SUBJECT_ID}' metadata in volume file '$VOL_FILE'." >> "${LOGFILE}"
-      mri_convert "${VOL_FILE}" "${NOMD_FILE}"
+      mri_convert "${VOL_FILE_BASENAME}" "${NOMD_FILE}"
       if [ $? -ne 0 ]; then
           echo "$APPTAG ERROR: mri_convert command failed for subject '${SUBJECT_ID}' volume file '${VOL_FILE}' (MGZ to NIFTI)." >> "${LOGFILE}"
       else
           if [ -f "${NOMD_FILE}" ]; then
-              mri_convert "${NOMD_FILE}" "${VOL_FILE}"
+              mri_convert "${NOMD_FILE}" "${VOL_FILE_BASENAME}"
               if [ $? -ne 0 ]; then
                   echo "$APPTAG ERROR: Could not convert subject '${SUBJECT_ID}' volume file '${NOMD_FILE}' back to '${VOL_FILE}' (NIFTI to MGZ)." >> "${LOGFILE}"
               else
-                  rm "${NOMD_FILE}"   # delete temporary NIFTI file
                   echo "$APPTAG INFO: Successfully dropped metadata in subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'." >> "${LOGFILE}"
               fi
+              rm "${NOMD_FILE}"   # delete temporary NIFTI file
           else
               echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' no metadata NIFTI volume file '${NOMD_FILE}' after mri_convert command (even though it returned no error). MD not dropped." >> "${LOGFILE}"
           fi
       fi
     done
 else
-    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'mri' sub directory. Continuing." >> "${LOGFILE}"
+    echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'mri' sub directory. Continuing." >> "${LOGFILE}"
 fi
 
+cd "${ORIGINAL_WORKING_DIR}"
 
 ## --------------------------------- Handle metadata in files in label/ dir ---------------------------------------
 
@@ -117,7 +125,7 @@ if [ -d "$SD/label/" ]; then
         fi
     done
 else
-    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'label' sub directory. Continuing." >> "${LOGFILE}"
+    echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'label' sub directory. Continuing." >> "${LOGFILE}"
 fi
 ## --------------------------------- Handle metadata in files in surf/ dir ---------------------------------------
 
@@ -125,9 +133,10 @@ fi
 echo "$APPTAG INFO: Handling data in sub directory 'surf' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 # This is ugly: the surface files cannot be identified by their file extension (they have none), so we need to know them. If
 # you manually created additional surfaces, you will have to add them here.
-SURFACES="white pial inflated orig smoothwm orig.nofix inflated.nofix pial-outer-smoothed qsphere.nofix sphere"
+SURFACES="white pial inflated orig smoothwm orig.nofix inflated.nofix pial-outer-smoothed qsphere.nofix sphere sphere.reg white.preaparc"
 HEMIS="lh rh"
 if [ -d "$SD/surf/" ]; then
+    find "$SD/surf/" -name "*.log" -delete         # delete surface log files
     find "$SD/surf/" -name "*.bak" -delete         # delete backups of log files
     for SURFACE in $SURFACES; do
         for HEMI in $HEMIS; do
@@ -157,7 +166,7 @@ if [ -d "$SD/surf/" ]; then
         done
     done
 else
-    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'surf' sub directory. Continuing." >> "${LOGFILE}"
+    echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'surf' sub directory. Continuing." >> "${LOGFILE}"
 fi
 
 
@@ -166,10 +175,7 @@ if [ -d "$SD/stats/" ]; then
     find "$SD/stats/" -name "*.bak" -delete         # delete backups of log files
     echo "$APPTAG WARNING: Sub directory 'stats' not handled yet." >> "${LOGFILE}"
 else
-    echo "$APPTAG WARNING: Subject '${SUBJECT_ID} has no 'stats' sub directory. Continuing." >> "${LOGFILE}"
+    echo "$APPTAG ERROR: Subject '${SUBJECT_ID} has no 'stats' sub directory. Continuing." >> "${LOGFILE}"
 fi
-
-
-
 
 echo "$APPTAG INFO: Finished metadata dropping for subject '${SUBJECT_ID}'." >> "${LOGFILE}"

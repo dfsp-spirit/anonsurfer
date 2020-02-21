@@ -115,5 +115,8 @@ else
     STATUS="STATUS_CHECK_ISSUES"
 fi
 
-echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final status: '${STATUS}'." >> "${LOGFILE}"
 echo "$APPTAG INFO: Subject '${SUBJECT_ID}' details: ${NUM_TRIED} volume files checked, ${NUM_EXISTING} found (${NUM_MISSING} missing), ${NUM_OK} successfully defaced, ${NUM_FAILED} failed." >> "${LOGFILE}"
+
+# The following report lines are in a stable format that is designed to be be easily parsable, e.g., using 'grep'.
+echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' DEFACE_FAIL_COUNT=${NUM_FAILED}" >> "${LOGFILE}"
+echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' DEFACE_FINAL_STATUS=${STATUS}" | tee -a "${LOGFILE}"
