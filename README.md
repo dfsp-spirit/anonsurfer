@@ -38,7 +38,7 @@ The following files will be defaced for every subject by default:
 
 ### Verification of the mri_deface results
 
-I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain), a script that renders all relavant volumes of a subject is [available as an example client for the library here](https://github.com/dfsp-spirit/fsbrain/blob/master/web/examples/facecheck.R). I render pre- and post-deface images and manually inspect them to verify that `mri_deface` worked as expected. Here are two examples:
+I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain). A script that renders all relevant volumes of a subject is [available as an example client for the library here](https://github.com/dfsp-spirit/fsbrain/blob/master/web/examples/facecheck.R). I render pre- and post-deface images and manually inspect them to verify that `mri_deface` worked as expected. Here are two examples:
 
 Original volumes for one subject:
 
@@ -49,7 +49,7 @@ After `mri_deface` pipeline run:
 
 The 5 volumes in each image are the ones listed above, in the same order. Note that `rawavg.mgz` and `001.mgz` are not conformed, so their orientation differs. The latest version of the script automatically rotates them to the standard orientation.
 
-If you want to use the deface check pipeline, run the script `run_deface_check.bash`. See the `run_deface_check_subject.bash` script for installation instructions.
+If you want to use the deface check pipeline, run the script `run_deface_check.bash`. See the `run_deface_check_subject.bash` script for fsbrain installation instructions.
 
 ## Metadata dropping
 
