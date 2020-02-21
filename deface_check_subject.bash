@@ -11,7 +11,8 @@
 #
 # System Requirements:
 # This script requires GNU R and the R package 'fsbrain'. Currently the latest dev version is required.
-# https://github.com/dfsp-spirit/fsbrain
+# Installation instructions are on see https://github.com/dfsp-spirit/fsbrain
+
 
 APPTAG="[DEFACE_CHECK_SUBJECT]"
 
