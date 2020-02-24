@@ -71,10 +71,20 @@ export FS_SKIP_TAGS
 
 ## --------------------------------- Handle metadata in files in mri/ and all other dirs ---------------------------------------
 
+
+
 ## ------------- Handle MGZ and MGH volume files  -----------
 
 echo "$APPTAG INFO: Handling data in sub directory 'mri' for subject '${SUBJECT_ID}'." >> "${LOGFILE}"
 if [ -d "$SD/mri/" ]; then
+
+    # Delete leftover directories from 'mri_nu_correct.mni' run in case they exist. These directories contain files that are not needed, and the contained 'ones.mgz' file will lead to
+    # an error when trying to convert it to NIFTI, which will show up in the logs as a (false positive) error and confuse people. So we delete the directory before handing MGZ files.
+    # The full name of the directories we are deleting here is something like 'mri/tmp.mri_nu_correct.mni.60321', where the last number seems to consist of random digits.
+    # Note: Under MacOS, the command will lead to one 'no such file or directory' message per matched folder, because 'find' first deletes the folder, but keeps its contents in the TODO list of
+    # directories it wants to check for further matches. This is a find bug, and you should ignore these messages.
+    find "$SD/mri/" -name "tmp.mri_nu_correct.mni*" -type d -exec rm -r "{}" \;
+
     VOLUME_FILES=$(find "$SD/" -name '*.mgz' -o -name '*.mgh');
     for VOL_FILE in $VOLUME_FILES; do
       cd "${ORIGINAL_WORKING_DIR}"
