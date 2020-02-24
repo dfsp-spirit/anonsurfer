@@ -38,7 +38,7 @@ The following files will be defaced for every subject by default:
 
 ### Verification of the mri_deface results
 
-I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain), a script that renders all relavant volumes of a subject is [available as an example client for the library here](https://github.com/dfsp-spirit/fsbrain/blob/master/web/examples/facecheck.R). I render pre- and post-deface images and manually inspect them to verify that `mri_deface` worked as expected. Here are two examples:
+I use my [fsbrain R library](https://github.com/dfsp-spirit/fsbrain). A script that renders all relevant volumes of a subject is [available as an example client for the library here](https://github.com/dfsp-spirit/fsbrain/blob/master/web/examples/facecheck.R). I render pre- and post-deface images and manually inspect them to verify that `mri_deface` worked as expected. Here are two examples:
 
 Original volumes for one subject:
 
@@ -49,7 +49,7 @@ After `mri_deface` pipeline run:
 
 The 5 volumes in each image are the ones listed above, in the same order. Note that `rawavg.mgz` and `001.mgz` are not conformed, so their orientation differs. The latest version of the script automatically rotates them to the standard orientation.
 
-If you want to use the deface check pipeline, run the script `run_deface_check.bash`. See the `run_deface_check_subject.bash` script for installation instructions.
+If you want to use the deface check pipeline, run the script `run_deface_check.bash`. See the `run_deface_check_subject.bash` script for fsbrain installation instructions.
 
 ## Metadata dropping
 
@@ -167,7 +167,7 @@ Parallelization happens on subject level (i.e., all files of one subject are pro
 A very rough guide to estimate the runtime of the pipelines for one subject (on one core):
 
 * **deface pipeline**: About 10 minutes in total: defacing takes roughly 2 minutes per volume file, and a typical subject has 5 volume files that need to be defaced. The bottleneck will be CPU here.
-* **deface check pipeline**: Roughly 2 minutes per subject (for the 5 volume files).
+* **deface check pipeline**: About 2 minutes in total (for the overview image showing the 5 volume files).
 * **drop metadata pipeline**: About 5 minutes in total, but this may increase if you run too many in parallel and disk IO becomes a bottleneck.
 
 These times are for a 2019 desktop system (4.2 GHz i7 CPU, SSD).
@@ -176,6 +176,6 @@ These times are for a 2019 desktop system (4.2 GHz i7 CPU, SSD).
 ## System Requirements
 
 * Linux or MacOS system (with BASH shell installed)
-  - Under MacOS, you will need to install GNU sed if you intend to use the deface pipeline. Easiest via [homebrew](https://brew.sh/ ): `brew install gnu-sed`
+  - Under MacOS, you will need to install GNU sed if you intend to use the metadata dropping pipeline. Easiest via [homebrew](https://brew.sh/ ): `brew install gnu-sed`
 * [FreeSurfer](http://freesurfer.net/) installed and configured for the BASH shell (e.g., environment variable FREESURFER_HOME set)
 * [GNU parallel](https://www.gnu.org/software/parallel/)
