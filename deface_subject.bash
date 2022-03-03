@@ -13,6 +13,7 @@ if [ -z "$2" ]; then
   echo "$APPTAG DEF_ERROR: Arguments missing. Exiting."
   echo "$APPTAG INFO: Usage: $0 <subject_id> <subjects_dir> [<log_tag>]"
   echo "$APPTAG INFO: This script requires that the FREESURFER_HOME environment variable is configured."
+  echo "$APPTAG INFO: The env var FREESURFER_HOME currently points to '$FREESURFER_HOME'."
   echo "$APPTAG WARNING: +++++ Running this script will alter parts of your imaging data! +++++ "
   echo "$APPTAG WARNING: +++++       Only run this on an extra copy of your data!         +++++ "
   exit 1
@@ -83,7 +84,9 @@ WHICH_FAILED=""
 WHICH_OK=""
 for REL_VOL_FILE in $VOLUME_FILES_RELATIVE_TO_MRI_DIR; do
     VOL_FILE="${SD}/${REL_VOL_FILE}"
+    echo -n "$APPTAG DEF_INFO: * Handling subject '${SUBJECT_ID}' volume file '$REL_VOL_FILE'" # line will be completed below (echo -n)
     if [ ! -f "${VOL_FILE}" ]; then
+        echo " -- result for $VOL_FILE: DEF_NOTICE : missing input file." # Continues and ends the 'Handling subject ...' output line.
         echo "$APPTAG DEF_NOTICE: Subject '${SUBJECT_ID} has no file '${VOL_FILE}'. Continuing." >> "${LOGFILE}"
         NUM_MISSING=$((NUM_MISSING+1))
         WHICH_MISSING="${WHICH_MISSING} ${REL_VOL_FILE}"
@@ -91,9 +94,9 @@ for REL_VOL_FILE in $VOLUME_FILES_RELATIVE_TO_MRI_DIR; do
     fi
     NUM_EXISTING=$((NUM_EXISTING+1))
     DEFACED_FILE="${VOL_FILE}.defaced.mgz"   # temp name for defaced file, will be renamed to original file name later.
-    echo "$APPTAG DEF_INFO: * Handling subject '${SUBJECT_ID}' volume file '$VOL_FILE'."
     mri_deface "${VOL_FILE}" "${SKULL_TEMPLATE}" "${FACE_TEMPLATE}" "${DEFACED_FILE}" >> "${LOGFILE}" 2>&1
     if [ $? -ne 0 ]; then
+        echo " -- result for $VOL_FILE: DEF_ERROR : deface command failed." # Continues and ends the 'Handling subject ...' output line.
         echo "$APPTAG DEF_ERROR: mri_deface command failed for subject '${SUBJECT_ID}' file '${VOL_FILE}'. Subject not defaced." >> "${LOGFILE}"
         NUM_FAILED=$((NUM_FAILED+1))
         WHICH_FAILED="${WHICH_FAILED} ${REL_VOL_FILE}"
@@ -101,15 +104,18 @@ for REL_VOL_FILE in $VOLUME_FILES_RELATIVE_TO_MRI_DIR; do
         if [ -f "${DEFACED_FILE}" ]; then
             mv "${DEFACED_FILE}" "${VOL_FILE}"
             if [ $? -ne 0 ]; then
+                echo " -- result for $VOL_FILE: DEF_ERROR : failed to rename defaced tmp file." # Continues and ends the 'Handling subject ...' output line.
                 echo "$APPTAG DEF_ERROR: Could not rename subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' to '${VOL_FILE}'. Subject not defaced." >> "${LOGFILE}"
                 NUM_FAILED=$((NUM_FAILED+1))
                 WHICH_FAILED="${WHICH_FAILED} ${REL_VOL_FILE}"
             else
+                echo " -- result for $VOL_FILE: DEF_INFO : success." # Continues and ends the 'Handling subject ...' output line.
                 echo "$APPTAG DEF_INFO:  Successfully defaced subject '${SUBJECT_ID}' brain volume '${VOL_FILE}'." >> "${LOGFILE}"
                 NUM_OK=$((NUM_OK+1))
                 WHICH_OK="${WHICH_OK} ${REL_VOL_FILE}"
             fi
         else
+            echo " -- result for $VOL_FILE: DEF_ERROR : expected final output file missing." # Continues and ends the 'Handling subject ...' output line.
             echo "$APPTAG DEF_ERROR: Cannot read subject '${SUBJECT_ID}' defaced file '${DEFACED_FILE}' after mri_deface command (even though it returned no error). Subject not defaced." >> "${LOGFILE}"
             NUM_FAILED=$((NUM_FAILED+1))
             WHICH_FAILED="${WHICH_FAILED} ${REL_VOL_FILE}"
@@ -124,9 +130,9 @@ else
 fi
 
 echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final details: ${NUM_TRIED} volume files checked, ${NUM_EXISTING} found (${NUM_MISSING} missing), ${NUM_OK} successfully defaced, ${NUM_FAILED} failed." >> "${LOGFILE}"
-echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: FILES_OK=$WHICH_OK"
-echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: FILES_MISSING=$WHICH_MISSING"
-echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: FILES_FAILED=$WHICH_FAILED"
+echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: ${NUM_OK} FILES_OK =$WHICH_OK" >> "${LOGFILE}"
+echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: ${NUM_MISSING} FILES_MISSING =$WHICH_MISSING" >> "${LOGFILE}"
+echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: ${NUM_FAILED} FILES_FAILED =$WHICH_FAILED" >> "${LOGFILE}"
 # The following report lines are in a stable format that is designed to be be easily parsable, e.g., using 'grep'.
 echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' DEFACE_FAIL_COUNT=${NUM_FAILED}" >> "${LOGFILE}"
 echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' DEFACE_FINAL_STATUS=${STATUS}" | tee -a "${LOGFILE}"
