@@ -141,8 +141,8 @@ fi
 
 if [ ${NUM_FAILED} -gt 0 ]; then
     touch "${LOGILE_FAILED_FILES}"
-    # Create a file that contains one failed file oper line (if any).
-    for failed_file in ${WHICH_FAILED}; do echo "${failed_file}" >> "${LOGILE_FAILED_FILES}" ; done
+    # Create a file that contains one failed file per line (if any). We also include the subject identifier part of the path, as we want to combine the log files from several subjects into a single file later on.
+    for failed_file in ${WHICH_FAILED}; do echo "${SD}/${failed_file}" >> "${LOGILE_FAILED_FILES}" ; done
     echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' The ${NUM_FAILED} failed files for this subject are logged in file '${LOGILE_FAILED_FILES}'." >> "${LOGFILE}"
 fi
 
