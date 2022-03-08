@@ -139,6 +139,10 @@ if [ -f "$LOGILE_MISSING_FILES" ]; then
   rm "$LOGILE_MISSING_FILES"
 fi
 
+if [ -f "${LOGILE_FAILED_FILES}" ]; then
+    rm "${LOGILE_FAILED_FILES}"
+fi
+
 if [ ${NUM_FAILED} -gt 0 ]; then
     touch "${LOGILE_FAILED_FILES}"
     # Create a file that contains one failed file per line (if any). We also include the subject identifier part of the path, as we want to combine the log files from several subjects into a single file later on.
