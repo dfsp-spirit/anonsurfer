@@ -30,6 +30,7 @@ else
   DATE_TAG="$3"
 fi
 LOGFILE="anonsurfer_subject_deface_${SUBJECT_ID}_${DATE_TAG}.log"
+LOGILE_FAILED_FILES="failed_files_anonsurfer_subject_deface_${SUBJECT_ID}.log"
 
 
 #### check some basic stuff first
@@ -133,6 +134,18 @@ echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final details: ${NUM_TRIED} volume f
 echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: ${NUM_OK} FILES_OK =$WHICH_OK" >> "${LOGFILE}"
 echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: ${NUM_MISSING} FILES_MISSING =$WHICH_MISSING" >> "${LOGFILE}"
 echo "$APPTAG INFO: Subject '${SUBJECT_ID}' final file status: ${NUM_FAILED} FILES_FAILED =$WHICH_FAILED" >> "${LOGFILE}"
+
+if [ -f "$LOGILE_MISSING_FILES" ]; then
+  rm "$LOGILE_MISSING_FILES"
+fi
+
+if [ ${NUM_FAILED} -gt 0 ]; then
+    touch "${LOGILE_FAILED_FILES}"
+    # Create a file that contains one failed file oper line (if any).
+    for failed_file in ${WHICH_FAILED}; do echo "${failed_file}" >> "${LOGILE_FAILED_FILES}" ; done
+    echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' The ${NUM_FAILED} failed files for this subject are logged in file '${LOGILE_FAILED_FILES}'." >> "${LOGFILE}"
+fi
+
 # The following report lines are in a stable format that is designed to be be easily parsable, e.g., using 'grep'.
 echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' DEFACE_FAIL_COUNT=${NUM_FAILED}" >> "${LOGFILE}"
 echo "$APPTAG INFO: [REPORT] Subject '${SUBJECT_ID}' DEFACE_FINAL_STATUS=${STATUS}" | tee -a "${LOGFILE}"
