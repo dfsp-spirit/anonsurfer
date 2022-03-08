@@ -19,6 +19,16 @@ if [ -z "$subjects_dir" ]; then
     echo "$APPTAG    <subjects_dir>  : path to the FreeSurfer recon-all output directory (known as FreeSurfer SUBJECTS_DIR)."
 fi
 
+if [ -f "${all_log_file}" ]; then
+    rm "${all_log_file}"
+    if [ -f "${all_log_file}" ]; then
+        echo "$APPTAG ERROR: Output file '${all_log_file}' exists and deleting it failed."
+        exit 1
+    fi
+fi
+
+touch "${all_log_file}"
+
 subjects_list=$(cat "${subjects_file}" | tr -d '\r' | tr '\n' ' ')    # fix potential windows line endings (delete '\r') and replace newlines by spaces as we want a list
 
 num_subjects_okay=0
