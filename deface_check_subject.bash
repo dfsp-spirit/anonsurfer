@@ -2,7 +2,7 @@
 # deface_check_subject.bash -- generate an image showing faces in all relevant volume files of a subject
 #
 # In contrast to some other scripts, this one does NOT change any data, it only visualizes brain volumes
-# and writes the result to an image file in the current working directory.
+# and writes the result to an image file in the current working directory (one file per volume).
 #
 # This script is part of 'anonsurfer' -- https://github.com/dfsp-spirit/anonsurfer
 #
@@ -12,6 +12,13 @@
 # System Requirements:
 # This script requires GNU R and the R package 'fsbrain'. Currently the latest dev version is required.
 # Installation instructions are on see https://github.com/dfsp-spirit/fsbrain
+#
+# Make sure to install with full dependencies (including misc3d), e.g.:
+#
+#     install.packages("fsbrain", dependencies=TRUE)
+#
+# Note: Running this in parallel on many cores also requires substantial memory, so you may want to use
+#       only some of the cores unless your machine has a lot of RAM.
 
 
 APPTAG="[DEFACE_CHECK_SUBJECT]"
@@ -87,13 +94,18 @@ echo "$APPTAG INFO: --- Visualizing subject '${SUBJECT_ID}' in directory '${SD}'
 echo "$APPTAG INFO: * Visualizing volumes of subject '${SUBJECT_ID}'."
 
 OUTPUT_IMAGE="facecheck_subject_${SUBJECT_ID}.png"
-${FACECHECK_SCRIPT} "${SUBJECTS_DIR}" "${SUBJECT_ID}" "${OUTPUT_IMAGE}" >> "${LOGFILE}" 2>&1
-if [ $? -ne 0 ]; then
-    echo "$APPTAG ERROR: facecheck.R command failed for subject '${SUBJECT_ID}' subjectsdir '${SUBJECTS_DIR}' output image '${OUTPUT_IMAGE}'. Subject not visualized." >> "${LOGFILE}"
+
+if [ -f "${OUTPUT_IMAGE}" ]; then
+    echo "$APPTAG INFO: Skipping subject '${SUBJECT_ID}', output image file '${OUTPUT_IMAGE}' already exists." >> "${LOGFILE}"
 else
-    if [ -f "${OUTPUT_IMAGE}" ]; then
-        echo "$APPTAG INFO: Visualized subject '${SUBJECT_ID}', see output image file '${OUTPUT_IMAGE}'." >> "${LOGFILE}"
+    ${FACECHECK_SCRIPT} "${SUBJECTS_DIR}" "${SUBJECT_ID}" "${OUTPUT_IMAGE}" >> "${LOGFILE}" 2>&1
+    if [ $? -ne 0 ]; then
+        echo "$APPTAG ERROR: facecheck.R command failed for subject '${SUBJECT_ID}' subjectsdir '${SUBJECTS_DIR}' output image '${OUTPUT_IMAGE}'. Subject not visualized." >> "${LOGFILE}"
     else
-        echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' output image file '${OUTPUT_IMAGE}' after facecheck.R command. Subject not visualized." >> "${LOGFILE}"
+        if [ -f "${OUTPUT_IMAGE}" ]; then
+            echo "$APPTAG INFO: Visualized subject '${SUBJECT_ID}', see output image file '${OUTPUT_IMAGE}'." >> "${LOGFILE}"
+        else
+            echo "$APPTAG ERROR: Cannot read subject '${SUBJECT_ID}' output image file '${OUTPUT_IMAGE}' after facecheck.R command. Subject not visualized." >> "${LOGFILE}"
+        fi
     fi
 fi
