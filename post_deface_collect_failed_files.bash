@@ -36,7 +36,7 @@ if [ -f "${all_failed_subjects_log_file}" ]; then
 fi
 
 touch "${all_failed_files_log_file}"
-touch "${all_failed_subject_log_file}"
+touch "${all_failed_subjects_log_file}"
 
 subjects_list=$(cat "${subjects_file}" | tr -d '\r' | tr '\n' ' ')    # fix potential windows line endings (delete '\r') and replace newlines by spaces as we want a list
 
@@ -53,4 +53,4 @@ for subject in $subjects_list; do
     fi
 done
 
-echo "$APPTAG Collected failed files for $num_subjects_failed subjects in '${all_failed_files_log_file}' and the failed subjects in '${all_failed_subejcts_log_file}'. $num_subjects_okay subjects did not have any failed files."
+echo "$APPTAG Collected failed files for $num_subjects_failed subjects in '${all_failed_files_log_file}' and the failed subjects in '${all_failed_subjects_log_file}'. $num_subjects_okay subjects did not have any failed files."
